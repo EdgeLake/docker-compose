@@ -64,13 +64,13 @@ DEPLOY_LOCAL_SCRIPT=false
 
 3. Start Node using _makefile_
 ```shell
-make up [NODE_TYPE]
+make up EDGELAKE_TYPE=[NODE_TYPE]
 ```
 
 ### Makefile Commands for Docker
 * help
 ```shell
-Usage: make [target] [anylog-type]
+Usage: make [target] EDGELAKE_TYPE=[anylog-type]
 Targets:
   build       Pull the docker image
   up          Start the containers
@@ -81,23 +81,23 @@ Targets:
   clean       Clean up volumes and network
   help        Show this help message
          supported EdgeLake types: master, operator and query
-Sample calls: make up master | make attach master | make clean master
+Sample calls: make up EDGELAKE_TYPE=master | make attach EDGELAKE_TYPE=master | make clean EDGELAKE_TYPE=master
 ```
 
 * Bring up a _query_ node
 ```shell
-make up query
+make up EDGELAKE_TYPE=query
 ```
 
 * Attach to _query_ node
 ```shell
 # to detach: ctrl-d
-make attach query  
+make attach EDGELAKE_TYPE=query  
 ```
 
 * Bring down _query_ node
 ```shell
-make down query
+make down EDGELAKE_TYPE=query
 ```
 If a _node-type_ is not set, then a generic node would automatically be used    
 
