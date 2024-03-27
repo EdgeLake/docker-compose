@@ -12,7 +12,7 @@ endif
 
 all: help
 build:
-	docker pull anylogco/edgelake:latest
+	docker pull anylogco/edgelake:$(TAG)
 up:
 	@echo "Deploy AnyLog with config file: anylog_$(EDGELAKE_TYPE).env"
 	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker_makefile/docker-compose-template.yaml > docker_makefile/docker-compose.yaml
