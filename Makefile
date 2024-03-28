@@ -1,18 +1,18 @@
 # Makefile
 
-export EDGELAKE_TYPE := generic
+EDGELAKE_TYPE := generic
 ifneq ($(filter-out $@,$(MAKECMDGOALS)), )
-	export EDGELAKE_TYPE = $(filter-out $@,$(MAKECMDGOALS))
+	EDGELAKE_TYPE = $(filter-out $@,$(MAKECMDGOALS))
 endif
 
-export TAG := latest
+TAG := latest
 ifeq ($(shell uname -m), arm64)
-	export TAG := latest-arm64
+	TAG := latest-arm64
 endif
 
 all: help
 build:
-	docker pull anylogco/edgelake:$(TAG)
+	docker pull anylogco/edgelake:latest
 up:
 	@echo "Deploy AnyLog with config file: anylog_$(EDGELAKE_TYPE).env"
 	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker_makefile/docker-compose-template.yaml > docker_makefile/docker-compose.yaml
