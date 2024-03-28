@@ -24,7 +24,7 @@ down:
 	@rm -rf docker_makefile/docker-compose.yaml
 clean:
 	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker_makefile/docker-compose-template.yaml > docker_makefile/docker-compose.yaml
-	@docker-compose -f docker_makefile/docker-compose.yaml down -v --remove-orphans --rmi all
+	@docker-compose -f docker_makefile/docker-compose.yaml down -v --rmi all
 	@rm -rf docker_makefile/docker-compose.yaml
 attach:
 	docker attach --detach-keys=ctrl-d edgelake-$(EDGELAKE_TYPE)
