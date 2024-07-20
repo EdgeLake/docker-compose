@@ -1,10 +1,9 @@
-version: "3"
 services:
   edgelake-${EDGELAKE_TYPE}:
     image: anylogco/edgelake:${TAG}
     restart: always
     env_file:
-      - edgelake_${EDGELAKE_TYPE}.env
+      - ../docker-makefiles/edgelake_${EDGELAKE_TYPE}.env
     container_name: edgelake-${EDGELAKE_TYPE}
     stdin_open: true
     tty: true

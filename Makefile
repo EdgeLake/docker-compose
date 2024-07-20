@@ -5,27 +5,32 @@ ifneq ($(filter-out $@,$(MAKECMDGOALS)), )
 	EDGELAKE_TYPE = $(filter-out $@,$(MAKECMDGOALS))
 endif
 
-export TAG := 1.3.2405
+export TAG := 1.3.2407-beta1
 ifeq ($(shell uname -m), arm64)
 	export TAG := 1.3.2405-arm64
 endif
 
+DOCKER_COMPOSE=$(shell command -v docker-compose 2>/dev/null || echo "docker compose")
+
 all: help
+dry:
+	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml
 build:
 	docker pull anylogco/edgelake:latest
 up:
 	@echo "Deploy AnyLog with config file: anylog_$(EDGELAKE_TYPE).env"
-	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker_makefile/docker-compose-template.yaml > docker_makefile/docker-compose.yaml
-	@docker-compose -f docker_makefile/docker-compose.yaml up -d
-	@rm -rf docker_makefile/docker-compose.yaml
+	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml
+	@echo ${DOCKER_COMPOSE} -f docker-makefiles/docker-compose.yaml up -d
+	@${DOCKER_COMPOSE} -f docker-makefiles/docker-compose.yaml up -d
+	@rm -rf docker-makefiles/docker-compose.yaml
 down:
-	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker_makefile/docker-compose-template.yaml > docker_makefile/docker-compose.yaml
-	@docker-compose -f docker_makefile/docker-compose.yaml down
-	@rm -rf docker_makefile/docker-compose.yaml
+	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml
+	@${DOCKER_COMPOSE} -f docker-makefiles/docker-compose.yaml down
+	@rm -rf docker-makefiles/docker-compose.yaml
 clean:
-	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker_makefile/docker-compose-template.yaml > docker_makefile/docker-compose.yaml
-	@docker-compose -f docker_makefile/docker-compose.yaml down -v --rmi all
-	@rm -rf docker_makefile/docker-compose.yaml
+	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml
+	@${DOCKER_COMPOSE} -f docker-makefiles/docker-compose.yaml down -v --rmi all
+	@rm -rf docker-makefiles/docker-compose.yaml
 attach:
 	docker attach --detach-keys=ctrl-d edgelake-$(EDGELAKE_TYPE)
 node-status:
