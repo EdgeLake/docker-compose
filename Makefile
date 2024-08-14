@@ -5,9 +5,9 @@ ifneq ($(filter-out $@,$(MAKECMDGOALS)), )
 	EDGELAKE_TYPE = $(filter-out $@,$(MAKECMDGOALS))
 endif
 
-export TAG := 1.3.2407-beta1
+export TAG := orics
 ifeq ($(shell uname -m), arm64)
-	export TAG := 1.3.2405-arm64
+	export TAG := orics-arm64
 endif
 
 DOCKER_COMPOSE=$(shell command -v docker-compose 2>/dev/null || echo "docker compose")
