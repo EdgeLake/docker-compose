@@ -5,7 +5,7 @@ ifneq ($(filter-out $@,$(MAKECMDGOALS)), )
 	EDGELAKE_TYPE = $(filter-out $@,$(MAKECMDGOALS))
 endif
 
-export TAG := 1.3.2407-beta1
+export TAG := 1.3.2408-beta9
 ifeq ($(shell uname -m), arm64)
 	export TAG := 1.3.2405-arm64
 endif
@@ -27,6 +27,9 @@ down:
 	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml
 	@${DOCKER_COMPOSE} -f docker-makefiles/docker-compose.yaml down
 	@rm -rf docker-makefiles/docker-compose.yaml
+clean-volume:
+	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml
+	@${DOCKER_COMPOSE} -f docker-makefiles/docker-compose.yaml down -v
 clean:
 	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml
 	@${DOCKER_COMPOSE} -f docker-makefiles/docker-compose.yaml down -v --rmi all
