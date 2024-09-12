@@ -5,8 +5,7 @@ The following provides direction to deploy EdgeLake using [_makefile_](Makefile)
 * [EdgeLake Source Code](https://github.com/EdgeLake/EdgeLake)
 
 **Requirements**
-* _Docker_
-* _docker-compose_
+* _[Docker & Docker Compose](https://docs.docker.com/desktop/install/linux/)_
 * _Makefile_
 ```shell
 # Add Docker's official GPG key:
