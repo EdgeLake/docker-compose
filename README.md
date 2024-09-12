@@ -130,6 +130,6 @@ The following provides an example for deploying EdgeLake via CLI. Users can [spe
 or run with defaults, in which case, a node with only TCP and REST connectivity will be deployed.
 
 ```shell 
-docker run -it --network host --name edgelake-generic --rm anylogco/edgelake:lastest
+docker run -it --network host --name edgelake-generic --rm anylogco/edgelake:latest
 ```
 Note, unless specified the default ports are 32548 (TCP) and 32549 (REST) 
