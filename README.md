@@ -9,10 +9,22 @@ The following provides direction to deploy EdgeLake using [_makefile_](Makefile)
 * _docker-compose_
 * _Makefile_
 ```shell
-sudo snap install docker
-sudo apt-get -y install docker-compose 
-sudo apt-get -y install make
- 
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin make 
+
 # Grant non-root user permissions to use docker
 USER=`whoami` 
 sudo groupadd docker 
@@ -102,7 +114,6 @@ make down EDGELAKE_TYPE=query
 If a _node-type_ is not set, then a generic node would automatically be used    
 
 
-
 ## Makefile Commands 
 * `build` - pull docker image 
 * `up` - Using _docker-compose_, start a container of AnyLog based on node type
@@ -113,4 +124,12 @@ If a _node-type_ is not set, then a generic node would automatically be used
 * `clean` - remove everything associated with container (including volume and image) based on node type
  
 
+## Deploy EdgeLake via Command Line 
 
+The following provides an example for deploying EdgeLake via CLI. Users can [specify configurations](docker-makefiles/edgelake_generic.env), 
+or run with defaults, in which case, a node with only TCP and REST connectivity will be deployed.
+
+```shell 
+docker run -it --network host --name edgelake-generic --rm anylogco/edgelake:lastest
+```
+Note, unless specified the default ports are 32548 (TCP) and 32549 (REST) 
