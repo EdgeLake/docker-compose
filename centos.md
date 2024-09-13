@@ -60,10 +60,10 @@ sudo systemctl restart sshd
    * device-mapper-persistent-data 
    * lvm2
 ```shell
-sudo yum install -y curl wget yum-utils device-mapper-persistent-data lvm2
+sudo yum install -y curl wget make git yum-utils device-mapper-persistent-data lvm2 
 ```
 
-3. Manually Download [rpm packages](https://download.docker.com/linux/centos/)
+2. Manually Download [rpm packages](https://download.docker.com/linux/centos/)
 ```shell
 mkdir rpm-pkgs ; cd rpm-pkgs
 curl https://download.docker.com/linux/centos/9/x86_64/stable/Packages/docker-ce-27.2.1-1.el9.x86_64.rpm -o docker-ce.rpm 
@@ -71,14 +71,14 @@ curl https://download.docker.com/linux/centos/9/x86_64/stable/Packages/docker-ce
 curl https://download.docker.com/linux/centos/9/x86_64/stable/Packages/containerd.io-1.7.22-3.1.el9.x86_64.rpm -o containerd.io.rpm 
 ```
 
-4. Install rpms
+3. Install rpms
 ```shell 
 sudo yum -y install ./docker-ce.rpm
 sudo yum -y install ./docker-ce-cli.rpm
 sudo yum -y install ./containerd.io.rpm
 ```
 
-5. Enable Docker
+4. Enable Docker
 ```shell
 sudo systemctl start docker
 sudo systemctl enable docker
