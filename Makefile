@@ -6,7 +6,7 @@ ifneq ($(filter-out $@,$(MAKECMDGOALS)), )
 endif
 
 export TAG := latest
-ifeq ($(shell uname -m), arm64)
+ifeq ($(shell uname -m), aarch64)
 	export TAG := 1.3.2405-arm64
 endif
 
