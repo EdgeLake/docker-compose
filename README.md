@@ -84,7 +84,7 @@ newgrp docker
 ```
 
 **RHEL**: These are the directions to install for RedHat Enterprise Linux 8.10.  The directions for Redhat download the package for Redhat directly from [Docker Downloads](https://download.docker.com/). 
-Users can utilize the same process to install _Docker_ / _Docker Compose_ on any operating system. c 
+Users can utilize the same process to install _Docker_ / _Docker Compose_ on any operating system.
 
 ```shell
 # Install Dependencies
