@@ -62,6 +62,53 @@ sudo usermod -aG docker ${USER}
 newgrp docker
 ```
 
+**Suse**: These are the directions to install for Suse Leap Enterprise Server 15.6.  The directions for CentOS download the package for CentOS9 directly from [Docker Downloads](https://download.docker.com/). 
+Users can utilize the same process to install _Docker_ / _Docker Compose_ on any operating system. c 
+
+```shell
+# Install Dependencies
+sudo zypper install git-core make
+
+# Run Yast to install docker, docker-compose and dependencies from Software->Software Management
+sudo yast
+
+# Enable Docker Service
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Grant non-root user permissions to use docker
+USER=`whoami` 
+sudo groupadd docker 
+sudo usermod -aG docker ${USER} 
+newgrp docker
+```
+
+**RHEL**: These are the directions to install for RedHat Enterprise Linux 8.10.  The directions for Redhat download the package for Redhat directly from [Docker Downloads](https://download.docker.com/). 
+Users can utilize the same process to install _Docker_ / _Docker Compose_ on any operating system. c 
+
+```shell
+# Install Dependencies
+sudo yum install -y yum-utils
+sudo yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+
+# Run yum to install docker, docker-compose and dependencies 
+sudo yum --allowerasing install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Install docker compose
+sudo curl -SL https://github.com/docker/compose/releases/download/v2.29.4/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+# Enable Docker Service
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Grant non-root user permissions to use docker
+USER=`whoami` 
+sudo groupadd docker 
+sudo usermod -aG docker ${USER} 
+newgrp docker
+```
+
 ## Prepare Machine
 Clone _docker-compose_ from EdgeLake repository
 ```shell
