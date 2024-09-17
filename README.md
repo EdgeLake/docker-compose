@@ -63,7 +63,7 @@ newgrp docker
 ```
 
 **Suse**: These are the directions to install for Suse Leap Enterprise Server 15.6.  The directions for CentOS download the package for CentOS9 directly from [Docker Downloads](https://download.docker.com/). 
-Users can utilize the same process to install _Docker_ / _Docker Compose_ on any operating system. c 
+Users can utilize the same process to install _Docker_ / _Docker Compose_ on any operating system. 
 
 ```shell
 # Install Dependencies
