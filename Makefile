@@ -5,8 +5,8 @@ ifneq ($(filter-out $@,$(MAKECMDGOALS)), )
 	EDGELAKE_TYPE = $(filter-out $@,$(MAKECMDGOALS))
 endif
 
-export TAG := 1.3.2408-beta9
-ifeq ($(shell uname -m), arm64)
+export TAG := latest
+ifeq ($(shell uname -m), aarch64)
 	export TAG := 1.3.2405-arm64
 endif
 
