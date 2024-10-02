@@ -1,13 +1,15 @@
 # Makefile
 
 EDGELAKE_TYPE := generic
-ifneq ($(filter-out $@,$(MAKECMDGOALS)), )
-	EDGELAKE_TYPE = $(filter-out $@,$(MAKECMDGOALS))
+ifneq ($(filter check,$(MAKECMDGOALS)), )
+        EDGELAKE_TYPE = $(EDGLAKE_TYPE)
+else
+        EDGELAKE_TYPE := generic
 endif
 
 export TAG := latest
 ifeq ($(shell uname -m), aarch64)
-	export TAG := 1.3.2405-arm64
+	export TAG := latest-arm64
 endif
 
 DOCKER_COMPOSE=$(shell command -v docker-compose 2>/dev/null || echo "docker compose")
@@ -36,36 +38,22 @@ clean:
 	@rm -rf docker-makefiles/docker-compose.yaml
 attach:
 	docker attach --detach-keys=ctrl-d edgelake-$(EDGELAKE_TYPE)
-node-status:
-	@if [ "$(EDGELAKE_TYPE)" = "master" ]; then \
-		curl -X GET 127.0.0.1:32049 -H "command: get status" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	elif [ "$(EDGELAKE_TYPE)" = "operator" ]; then \
-		curl -X GET 127.0.0.1:32149 -H "command: get status" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	elif [ "$(EDGELAKE_TYPE)" = "query" ]; then \
-		curl -X GET 127.0.0.1:32349 -H "command: get status" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	elif [ "$(NODE_TYPE)" == "generic" ]; then \
-		curl -X GET 127.0.0.1:32549 -H "command: get status" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	fi
-test-node:
-	@if [ "$(EDGELAKE_TYPE)" = "master" ]; then \
-		curl -X GET 127.0.0.1:32049 -H "command: test node" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	elif [ "$(EDGELAKE_TYPE)" = "operator" ]; then \
-		curl -X GET 127.0.0.1:32149 -H "command: test node" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	elif [ "$(EDGELAKE_TYPE)" = "query" ]; then \
-		curl -X GET 127.0.0.1:32349 -H "command: test node" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	elif [ "$(NODE_TYPE)" == "generic" ]; then \
-		curl -X GET 127.0.0.1:32549 -H "command: test node" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	fi
-test-network:
-	@if [ "$(EDGELAKE_TYPE)" = "master" ]; then \
-		curl -X GET 127.0.0.1:32049 -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	elif [ "$(EDGELAKE_TYPE)" = "operator" ]; then \
-		curl -X GET 127.0.0.1:32149 -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	elif [ "$(EDGELAKE_TYPE)" = "query" ]; then \
-		curl -X GET 127.0.0.1:32349 -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	elif [ "$(NODE_TYPE)" == "generic" ]; then \
-		curl -X GET 127.0.0.1:32549 -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	fi
+test-conn:
+	@echo "REST Connection Info for testing (Example: 127.0.0.1:32149):"
+	@read CONN; \
+	echo $$CONN > conn.tmp
+test-node: test-conn
+	@CONN=$$(cat conn.tmp); \
+	echo "Node State against $$CONN"; \
+	curl -X GET http://$$CONN -H "command: get status"    -H "User-Agent: AnyLog/1.23" -w "\n"; \
+	curl -X GET http://$$CONN -H "command: test node"     -H "User-Agent: AnyLog/1.23" -w "\n"; \
+	curl -X GET http://$$CONN -H "command: get processes" -H "User-Agent: AnyLog/1.23" -w "\n"; \
+	rm -rf conn.tmp
+test-network: test-conn
+	@CONN=$$(cat conn.tmp); \
+	echo "Test Network Against: $$CONN"; \
+	curl -X GET http://$$CONN -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"; \
+	rm -rf conn.tmp
 exec:
 	docker exec -it edgelake-$(EDGELAKE_TYPE) bash
 logs:
