@@ -143,7 +143,7 @@ cd docker-compose
 
 ## Deploy EdgeLake via Docker 
 1. Edit LEDGER_CONN in query and operator using IP address of master node
-2. Update `.env` configurations for the node(s) being deployed
+2. Update `.env` configurations for the node(s) being deployed. Extensive list of configuration options can be found in the <a href="https://github.com/AnyLog-co/docker-compose/" target="_blank">enterprise deployment</a>  
    * [docker_makefile/edgelake_generic.env](docker_makefile/edgelake_generic.env) - A "sandbox" node consisting of only TCP, REST and optionally Message broker services
    * [docker_makefile/edgelake_master.env](docker_makefile/edgelake_master.env) - A node with services that allow managing network metadata as an alternative to the blockchain
    * [docker_makefile/edgelake_operator.env](docker_makefile/edgelake_operator.env) - A node with services that allow to store and manage IoT / edge data in real-time.
