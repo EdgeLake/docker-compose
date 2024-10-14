@@ -19,21 +19,21 @@ dry:
 	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml
 build:
 	docker pull anylogco/edgelake:latest
-up:
+up: dry
 	@echo "Deploy AnyLog with config file: anylog_$(EDGELAKE_TYPE).env"
-	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml
+	# EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml
 	@echo ${DOCKER_COMPOSE} -f docker-makefiles/docker-compose.yaml up -d
 	@${DOCKER_COMPOSE} -f docker-makefiles/docker-compose.yaml up -d
 	@rm -rf docker-makefiles/docker-compose.yaml
-down:
-	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml
+down: dry
+	# EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml
 	@${DOCKER_COMPOSE} -f docker-makefiles/docker-compose.yaml down
 	@rm -rf docker-makefiles/docker-compose.yaml
-clean-volume:
-	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml
+clean-volume: dry
+	# EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml
 	@${DOCKER_COMPOSE} -f docker-makefiles/docker-compose.yaml down -v
-clean:
-	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml
+clean: dry
+	# EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml
 	@${DOCKER_COMPOSE} -f docker-makefiles/docker-compose.yaml down -v --rmi all
 	@rm -rf docker-makefiles/docker-compose.yaml
 attach:
