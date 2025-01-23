@@ -9,6 +9,7 @@ endif
 
 export TAG := latest
 # Check if the architecture matches aarch64 or arm64
+ARCH := $(shell uname -m)
 ifeq ($(ARCH),aarch64)
     export TAG := latest-arm64
 else ifeq ($(ARCH),arm64)
