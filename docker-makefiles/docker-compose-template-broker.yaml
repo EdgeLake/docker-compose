@@ -11,6 +11,7 @@ services:
     ports:
       - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
       - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
+      - ${ANYLOG_BROKER_PORT}:${ANYLOG_BROKER_PORT}
     volumes:
       - edgelake-${EDGELAKE_TYPE}-anylog:/app/EdgeLake/anylog
       - edgelake-${EDGELAKE_TYPE}-blockchain:/app/EdgeLake/blockchain

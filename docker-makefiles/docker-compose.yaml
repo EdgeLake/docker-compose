@@ -1,0 +1,25 @@
+services:
+  edgelake-master:
+    image: anylogco/edgelake:latest
+    restart: always
+    env_file:
+      -  ../docker-makefiles/edgelake_master.env
+      - .env
+    container_name: edgelake-master
+    stdin_open: true
+    tty: true
+    ports:
+      - 32048:32048
+      - 32049:32049
+    volumes:
+      - edgelake-master-anylog:/app/EdgeLake/anylog
+      - edgelake-master-blockchain:/app/EdgeLake/blockchain
+      - edgelake-master-data:/app/EdgeLake/data
+      - edgelake-master-local-scripts:/app/deployment-scripts
+      - nebula-overlay:/app/nebula
+volumes:
+  edgelake-master-anylog:
+  edgelake-master-blockchain:
+  edgelake-master-data:
+  edgelake-master-local-scripts:
+  nebula-overlay:
