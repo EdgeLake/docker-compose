@@ -1,9 +1,18 @@
+version: '3.8'
+
+networks:
+  custom_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.86.0/24  # Define a subnet that doesn't conflict with your host's network
+
 services:
   edgelake-${EDGELAKE_TYPE}:
     image: ${IMAGE}:${TAG}
     restart: always
     env_file:
-      -  ../docker-makefiles/edgelake_${EDGELAKE_TYPE}.env
+      - ../docker-makefiles/edgelake_${EDGELAKE_TYPE}.env
       - .env
     container_name: edgelake-${EDGELAKE_TYPE}
     stdin_open: true
@@ -17,6 +26,10 @@ services:
       - edgelake-${EDGELAKE_TYPE}-data:/app/EdgeLake/data
       - edgelake-${EDGELAKE_TYPE}-local-scripts:/app/deployment-scripts
       - nebula-overlay:/app/nebula
+    networks:
+      custom_network:
+        ipv4_address: 192.168.86.23  # Assign a static IP if needed
+
 volumes:
   edgelake-${EDGELAKE_TYPE}-anylog:
   edgelake-${EDGELAKE_TYPE}-blockchain:
