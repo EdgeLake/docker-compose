@@ -3,6 +3,7 @@
 The following provides direction to deploy EdgeLake using [_makefile_](Makefile) for Docker-based deployment.
 
 * [EdgeLake Source Code](https://github.com/EdgeLake/EdgeLake)
+* [Surrounding components install](support.md)
 
 **Requirements**
 * _Docker_
