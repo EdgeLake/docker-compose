@@ -9,27 +9,33 @@ export ARCH := $(shell uname -m)
 export TAG := latest
 ifeq ($(ARCH),aarch64)
     export TAG := latest-arm64
-    export ARCH=arm64
 else ifeq ($(ARCH),arm64)
     export TAG := latest-arm64
-    export ARCH=arm64
 endif
+
+export DOCKER_COMPOSE_CMD := $(shell if command -v podman-compose >/dev/null 2>&1; then echo "podman-compose"; \
+	elif command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; \
+	else echo "docker compose"; fi)
 
 all: help
 build:
-	docker pull anylogco/edgelake:latest
+	docker pull anylogco/edgelake:$(TAG)
 up:
 	@echo "Deploy AnyLog with config file: anylog_$(EDGELAKE_TYPE).env"
 	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker_makefile/docker-compose-template.yaml > docker_makefile/docker-compose.yaml
-	@docker-compose -f docker_makefile/docker-compose.yaml up -d
+	@${DOCKER_COMPOSE_CMD} -f docker_makefile/docker-compose.yaml up -d
 	@rm -rf docker_makefile/docker-compose.yaml
 down:
 	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker_makefile/docker-compose-template.yaml > docker_makefile/docker-compose.yaml
-	@docker-compose -f docker_makefile/docker-compose.yaml down
+	@${DOCKER_COMPOSE_CMD} -f docker_makefile/docker-compose.yaml down
 	@rm -rf docker_makefile/docker-compose.yaml
+clean-vols:
+	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker_makefile/docker-compose-template.yaml > docker_makefile/docker-compose.yaml
+	@${DOCKER_COMPOSE_CMD} -f docker-makefiles/docker-compose.yaml down --volumes
+	@rm -rf docker-makefiles/docker-compose.yaml
 clean:
 	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker_makefile/docker-compose-template.yaml > docker_makefile/docker-compose.yaml
-	@docker-compose -f docker_makefile/docker-compose.yaml down -v --rmi all
+	@${DOCKER_COMPOSE_CMD} -f docker_makefile/docker-compose.yaml down -v --rmi all
 	@rm -rf docker_makefile/docker-compose.yaml
 attach:
 	docker attach --detach-keys=ctrl-d edgelake-$(EDGELAKE_TYPE)
@@ -77,7 +83,8 @@ help:
 	@echo "  exec        Attach to shell interface for container"
 	@echo "  down        Stop and remove the containers"
 	@echo "  logs        View logs of the containers"
-	@echo "  clean       Clean up volumes and network"
+	@echo "	 clean-vols  Stop and remove the containers and remove image and volumes"
+	@echo "  clean       Stop and remove the containers and remove volumes "
 	@echo "  help        Show this help message"
 	@echo "  supported EdgeLake types: generic, master, operator, and query"
 	@echo "Sample calls: make up master | make attach master | make clean master"

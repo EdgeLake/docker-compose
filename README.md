@@ -67,6 +67,32 @@ DEPLOY_LOCAL_SCRIPT=false
 make up EDGELAKE_TYPE=[NODE_TYPE]
 ```
 
+## Advanced configurations
+Provides a subset of the configurations required to deploy a node. A full list of the configurations can be found in
+AnyLog's [Docker Compose repository](https://github.com/AnyLog-co/docker-compose/tree/main/docker-makefile). 
+
+### Overlay Network 
+One of the things we offer a fully integrated connection to <a href="https://nebula.defined.net/docs" target="_blank">Nebula Overlay Network</a>.
+
+To deploy, update configurations with the following params
+```dotenv
+# Overlay IP address - if set, will replace local IP address when connecting to network
+OVERLAY_IP=""
+
+# whether to enable Lighthouse
+ENABLE_NEBULA=false
+# create new nebula keys
+NEBULA_NEW_KEYS=false
+# whether node is type lighthouse
+IS_LIGHTHOUSE=false
+# Nebula CIDR IP address for itself - the IP component should be the same as the OVERLAY_IP (ex. 10.10.1.15/24)
+CIDR_OVERLAY_ADDRESS=10.10.1.1/24
+# Nebula IP address for Lighthouse node (ex. 10.10.1.15)
+LIGHTHOUSE_IP=10.10.1.1
+# External physical IP of the node associated with Nebula lighthouse
+LIGHTHOUSE_NODE_IP=172.232.250.209
+```
+
 ### Makefile Commands for Docker
 * help
 ```shell
@@ -99,9 +125,7 @@ make attach EDGELAKE_TYPE=query
 ```shell
 make down EDGELAKE_TYPE=query
 ```
-If a _node-type_ is not set, then a generic node would automatically be used    
-
-
+If a _node-type_ is not set, then a generic node would automatically be used
 
 ## Makefile Commands 
 * `build` - pull docker image 
