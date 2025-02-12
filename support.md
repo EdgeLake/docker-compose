@@ -9,6 +9,7 @@ PostgresSQL is a SQL based database, that's used as an alternative to SQLite, al
 the need to EdgeLake containers persistent. 
 
 Directions for installing locally on machine
+* [GUI-based Install](https://www.w3schools.com/postgresql/postgresql_install.php)
 * [Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-22-04)
 * [Centos](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-centos-8)
 
