@@ -75,6 +75,7 @@ Configurations include:
 * Blockchain sync time
 * manually set geolocation 
 * threading and pool sizes
+* etc.
 
 
 ### Overlay Network 
