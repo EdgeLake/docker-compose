@@ -72,14 +72,14 @@ make up EDGELAKE_TYPE=[NODE_TYPE]
 Provides a subset of the configurations required to deploy a node. A full list of the configurations can be found in
 AnyLog's [Docker Compose repository](https://github.com/AnyLog-co/docker-compose/tree/main/docker-makefile). 
 
-Configurations include: 
-* Blockchain sync time
+Configurations include:
 * manually set geolocation 
 * threading and pool sizes
-* etc.
+* utilize live blockchain rather than master node
+* [Overlay network](#overlay-network)
+* [Deploying personalized scripts](https://github.com/AnyLog-co/documentation/blob/master/deployments/executing_scripts.md)
 
-
-### Overlay Network 
+### Overlay Network
 One of the things we offer a fully integrated connection to <a href="https://nebula.defined.net/docs" target="_blank">Nebula Overlay Network</a>.
 
 * [Nebula - In General](https://github.com/AnyLog-co/documentation/blob/master/deployments/Networking%20%26%20Security/nebula.md)
