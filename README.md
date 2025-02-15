@@ -1,13 +1,17 @@
 # Deploying EdgeLake
 
-The following provides direction to deploy EdgeLake using [_makefile_](Makefile) for Docker-based deployment.
+EdgeLake provides Real-Time Visibility and Management of Distributed Edge Data, Applications and Infrastructure. EdgeLake 
+transforms the edge to a scalable data tier that is optimized for IoT data, enabling organizations to extract real-time 
+insight for any use case in any industries spanning Manufacturing, Utilities, Oil & Gas, Retail, Robotics, Smart Cities, 
+Automotive, and more.
 
+* [Documentation](https://edgelake.github.io/)
 * [EdgeLake Source Code](https://github.com/EdgeLake/EdgeLake)
 * [Surrounding components install](support.md)
 
-**Requirements**
-* _Docker_
-* _docker-compose_
+
+## Prepare Machine
+* [_Docker_ & _docker compose_](https://docs.docker.com/engine/install/)
 * _Makefile_
 ```shell
 sudo snap install docker
@@ -15,18 +19,78 @@ sudo apt-get -y install docker-compose
 sudo apt-get -y install make
  
 # Grant non-root user permissions to use docker
-USER=`whoami` 
+USER=`whoami`
 sudo groupadd docker 
 sudo usermod -aG docker ${USER} 
 newgrp docker
 ```
 
-## Prepare Machine
-Clone _docker-compose_ from EdgeLake repository
+* Clone _docker-compose_ from EdgeLake repository
 ```shell
 git clone https://github.com/EdgeLake/docker-compose
 cd docker-compose
 ```
+
+## Basic Deployment
+EdgeLake deployment contains  predefined configurations for each node type, enabling users to deploy a network with a 
+simple `docker run` command. This approach allows for quick deployment with minimal configuration but is limited to one 
+node type per machine. To overcome this limitation, additional environment configurations can be provided.
+
+### Default Deployment and Networking Configuration
+When deploying using the basic command, the container utilizes the default parameters based on `NODE_TYPE`, with the 
+following networking configurations:
+
+<html>
+<table>
+   <tr>
+      <th>Node Type</th>
+      <th>Server Port</th>
+      <th>Rest Port</th>
+      <th>Run command</th>
+   </tr>
+   <tr>
+      <td>Master</td>
+      <td>32048</td>
+      <td>32049</td>
+      <td><code>docker run -it -d \ 
+<br/>-p 32048:32048 \
+<br/>-p 320498:32049 \
+<br/>-e NODE_TYPE=master \
+<br/>--name edgelake-master --rm anylogco/edgelake:latest</code></td>
+   </tr>
+   <tr>
+      <td>Operator</td>
+      <td>32148</td>
+      <td>32149</td>
+      <td><code>docker run -it -d \ 
+<br/>-p 32148:32148 \
+<br/>-p 32149:32149 \
+<br/>-e NODE_TYPE=operator \
+<br/>--name edgelake-operator --rm anylogco/edgelake:latest</code></td>
+   </tr>
+   <tr>
+      <td>Query</td>
+      <td>32348</td>
+      <td>32349</td>
+      <td><code>docker run -it -d \ 
+<br/>-p 32348:32348 \
+<br/>-p 32349:32349 \
+<br/>-e NODE_TYPE=query \
+<br/>--name edgelake-query --rm anylogco/edgelake:latest</code></td>
+   </tr>
+   <tr>
+      <td>Generic</td>
+      <td>3548</td>
+      <td>32549</td>
+      <td><code>docker run -it -d \ 
+<br/>-p 32548:32548 \
+<br/>-p 32549:32549 \
+<br/>-e NODE_TYPE=generic \
+<br/>--name edgelake-node --rm anylogco/edgelake:latest</code></td>
+   </tr>
+</table>
+</html>
+
 
 ## Deploy EdgeLake via Docker 
 1. Edit LEDGER_CONN in query and operator using IP address of master node
@@ -35,74 +99,10 @@ cd docker-compose
    * [docker_makefile/edgelake_operator.env](docker_makefile/edgelake_operator.env)
    * [docker_makefile/edgelake_qauery.env](docker_makefile/edgelake_query.env)
 
-```dotenv
-#--- General ---
-# Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
-NODE_TYPE=master
-# Name of the AnyLog instance
-NODE_NAME=anylog-master
-# Owner of the AnyLog instance
-COMPANY_NAME=New Company
-
-#--- Networking ---
-# Port address used by AnyLog's TCP protocol to communicate with other nodes in the network
-ANYLOG_SERVER_PORT=32048
-# Port address used by AnyLog's REST protocol
-ANYLOG_REST_PORT=32049
-# A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
-TCP_BIND=false
-# A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
-REST_BIND=false
-
-#--- Blockchain ---
-# TCP connection information for Master Node
-LEDGER_CONN=127.0.0.1:32048
-
-#--- Advanced Settings ---
-# Whether to automatically run a local (or personalized) script at the end of the process
-DEPLOY_LOCAL_SCRIPT=false
-```
 
 3. Start Node using _makefile_
 ```shell
 make up EDGELAKE_TYPE=[NODE_TYPE]
-```
-
-## Advanced configurations
-Provides a subset of the configurations required to deploy a node. A full list of the configurations can be found in
-AnyLog's [Docker Compose repository](https://github.com/AnyLog-co/docker-compose/tree/main/docker-makefile). 
-
-Configurations include:
-* manually set geolocation 
-* threading and pool sizes
-* utilize live blockchain rather than master node
-* [Overlay network](#overlay-network)
-* [Deploying personalized scripts](https://github.com/AnyLog-co/documentation/blob/master/deployments/executing_scripts.md)
-
-### Overlay Network
-One of the things we offer a fully integrated connection to <a href="https://nebula.defined.net/docs" target="_blank">Nebula Overlay Network</a>.
-
-* [Nebula - In General](https://github.com/AnyLog-co/documentation/blob/master/deployments/Networking%20%26%20Security/nebula.md)
-* [Preparing for Nebula](https://github.com/AnyLog-co/documentation/blob/master/deployments/Networking%20%26%20Security/nebula_through_anylog.md)
-* [Configuring Overlay Network](https://github.com/AnyLog-co/documentation/blob/master/deployments/Networking%20%26%20Security/Configuring%20Overlay%20with%20AnyLog.md)
-
-To deploy, update configurations with the following params
-```dotenv
-# Overlay IP address - if set, will replace local IP address when connecting to network
-OVERLAY_IP=""
-
-# whether to enable Lighthouse
-ENABLE_NEBULA=false
-# create new nebula keys
-NEBULA_NEW_KEYS=false
-# whether node is type lighthouse
-IS_LIGHTHOUSE=false
-# Nebula CIDR IP address for itself - the IP component should be the same as the OVERLAY_IP (ex. 10.10.1.15/24)
-CIDR_OVERLAY_ADDRESS=10.10.1.1/24
-# Nebula IP address for Lighthouse node (ex. 10.10.1.15)
-LIGHTHOUSE_IP=10.10.1.1
-# External physical IP of the node associated with Nebula lighthouse
-LIGHTHOUSE_NODE_IP=172.232.250.209
 ```
 
 ### Makefile Commands for Docker
@@ -149,4 +149,44 @@ If a _node-type_ is not set, then a generic node would automatically be used
 * `clean` - remove everything associated with container (including volume and image) based on node type
  
 
+
+
+
+
+## Advanced configurations
+Provides a subset of the configurations required to deploy a node. A full list of the configurations can be found in
+AnyLog's [Docker Compose repository](https://github.com/AnyLog-co/docker-compose/tree/main/docker-makefile). 
+
+Configurations include:
+* manually set geolocation 
+* threading and pool sizes
+* utilize live blockchain rather than master node
+* [Overlay network](#overlay-network)
+* [Deploying personalized scripts](https://github.com/AnyLog-co/documentation/blob/master/deployments/executing_scripts.md)
+
+### Overlay Network
+One of the things we offer a fully integrated connection to <a href="https://nebula.defined.net/docs" target="_blank">Nebula Overlay Network</a>.
+
+* [Nebula - In General](https://github.com/AnyLog-co/documentation/blob/master/deployments/Networking%20%26%20Security/nebula.md)
+* [Preparing for Nebula](https://github.com/AnyLog-co/documentation/blob/master/deployments/Networking%20%26%20Security/nebula_through_anylog.md)
+* [Configuring Overlay Network](https://github.com/AnyLog-co/documentation/blob/master/deployments/Networking%20%26%20Security/Configuring%20Overlay%20with%20AnyLog.md)
+
+To deploy, update configurations with the following params
+```dotenv
+# Overlay IP address - if set, will replace local IP address when connecting to network
+OVERLAY_IP=""
+
+# whether to enable Lighthouse
+ENABLE_NEBULA=false
+# create new nebula keys
+NEBULA_NEW_KEYS=false
+# whether node is type lighthouse
+IS_LIGHTHOUSE=false
+# Nebula CIDR IP address for itself - the IP component should be the same as the OVERLAY_IP (ex. 10.10.1.15/24)
+CIDR_OVERLAY_ADDRESS=10.10.1.1/24
+# Nebula IP address for Lighthouse node (ex. 10.10.1.15)
+LIGHTHOUSE_IP=10.10.1.1
+# External physical IP of the node associated with Nebula lighthouse
+LIGHTHOUSE_NODE_IP=172.232.250.209
+```
 
