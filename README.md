@@ -11,7 +11,7 @@ Automotive, and more.
 
 
 ## Prepare Machine
-* [_Docker_ & _docker compose_](https://docs.docker.com/engine/install/)
+* [Docker & Docker-Compose](https://docs.docker.com/engine/install/)
 * _Makefile_
 ```shell
 sudo snap install docker
