@@ -66,6 +66,7 @@ following networking configurations:
 <br/>-p 32148:32148 \
 <br/>-p 32149:32149 \
 <br/>-e NODE_TYPE=operator \
+<br/>-e LEDGER_CONN=[MASTER_NODE IP:Port] \
 <br/>--name edgelake-operator --rm anylogco/edgelake:latest</code></td>
    </tr>
    <tr>
@@ -76,6 +77,7 @@ following networking configurations:
 <br/>-p 32348:32348 \
 <br/>-p 32349:32349 \
 <br/>-e NODE_TYPE=query \
+<br/>-e LEDGER_CONN=[MASTER_NODE IP:Port] \
 <br/>--name edgelake-query --rm anylogco/edgelake:latest</code></td>
    </tr>
    <tr>
@@ -92,66 +94,34 @@ following networking configurations:
 </html>
 
 
-## Deploy EdgeLake via Docker 
-1. Edit LEDGER_CONN in query and operator using IP address of master node
-2. Update `.env` configurations for the node(s) being deployed 
+## Deploy EdgeLake via Docker
+1. Update `.env` configurations for the node(s) being deployed -- Edit LEDGER_CONN in _query_ and _operator_ using  the 
+IP address of master node
    * [docker_makefile/edgelake_master.env](docker_makefile/edgelake_master.env)
    * [docker_makefile/edgelake_operator.env](docker_makefile/edgelake_operator.env)
-   * [docker_makefile/edgelake_qauery.env](docker_makefile/edgelake_query.env)
+   * [docker_makefile/edgelake_query.env](docker_makefile/edgelake_query.env)
 
-
-3. Start Node using _makefile_
+2. Start Node using _makefile_
 ```shell
 make up EDGELAKE_TYPE=[NODE_TYPE]
 ```
 
 ### Makefile Commands for Docker
-* help
 ```shell
-Usage: make [target] EDGELAKE_TYPE=[anylog-type]
 Targets:
   build       Pull the docker image
   up          Start the containers
   attach      Attach to EdgeLake instance
+  test        Using cURL validate node is running
   exec        Attach to shell interface for container
   down        Stop and remove the containers
   logs        View logs of the containers
-  clean       Clean up volumes and network
+  clean-vols  Stop and remove the containers and remove image and volumes
+  clean       Stop and remove the containers and remove volumes 
   help        Show this help message
-         supported EdgeLake types: master, operator and query
+  supported EdgeLake types: generic, master, operator, and query
 Sample calls: make up EDGELAKE_TYPE=master | make attach EDGELAKE_TYPE=master | make clean EDGELAKE_TYPE=master
 ```
-
-* Bring up a _query_ node
-```shell
-make up EDGELAKE_TYPE=query
-```
-
-* Attach to _query_ node
-```shell
-# to detach: ctrl-d
-make attach EDGELAKE_TYPE=query  
-```
-
-* Bring down _query_ node
-```shell
-make down EDGELAKE_TYPE=query
-```
-If a _node-type_ is not set, then a generic node would automatically be used
-
-## Makefile Commands 
-* `build` - pull docker image 
-* `up` - Using _docker-compose_, start a container of AnyLog based on node type
-* `attach` - Attach to an AnyLog docker container based on node type
-* `exec` - Attach to the shell interface of an AnyLog docker container, based on the node type 
-* `log` - check docker container logs based on container type
-* `down` - Stop container based on node type 
-* `clean` - remove everything associated with container (including volume and image) based on node type
- 
-
-
-
-
 
 ## Advanced configurations
 Provides a subset of the configurations required to deploy a node. A full list of the configurations can be found in
