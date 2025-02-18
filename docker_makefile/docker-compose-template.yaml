@@ -8,7 +8,10 @@ services:
     container_name: edgelake-${EDGELAKE_TYPE}
     stdin_open: true
     tty: true
-    network_mode: host
+    # network_mode:
+    ports:
+      - ${EDGELAKE_SERVER_PORT}:${EDGELAKE_SERVER_PORT}
+      - ${EDGELAKE_REST_PORT}:${EDGELAKE_REST_PORT}
     volumes:
       - edgelake-${EDGELAKE_TYPE}-anylog:/app/EdgeLake/anylog
       - edgelake-${EDGELAKE_TYPE}-blockchain:/app/EdgeLake/blockchain
