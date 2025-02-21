@@ -1,14 +1,13 @@
 version: "3"
 services:
-  edgelake-${EDGELAKE_TYPE}:
+  edgelake-${EDGELAKE_TYPE}-${NODE_NAME}:
     image: anylogco/edgelake:${TAG}
     restart: always
     env_file:
       - edgelake_${EDGELAKE_TYPE}.env
-    container_name: edgelake-${EDGELAKE_TYPE}
+    container_name: edgelake-${EDGELAKE_TYPE}-${NODE_NAME}
     stdin_open: true
-    tty: true
-    # network_mode:
+    tty: true    
     ports:
       - ${EDGELAKE_SERVER_PORT}:${EDGELAKE_SERVER_PORT}
       - ${EDGELAKE_REST_PORT}:${EDGELAKE_REST_PORT}
@@ -17,6 +16,7 @@ services:
       - edgelake-${EDGELAKE_TYPE}-blockchain:/app/EdgeLake/blockchain
       - edgelake-${EDGELAKE_TYPE}-data:/app/EdgeLake/data
       - edgelake-${EDGELAKE_TYPE}-local-scripts:/app/deployment-scripts
+
 volumes:
   edgelake-${EDGELAKE_TYPE}-anylog:
   edgelake-${EDGELAKE_TYPE}-blockchain:
