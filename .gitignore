@@ -3,3 +3,5 @@ venv/
 .idea
 __pycache__/
 docker-makefiles/
+docker-makefiles/docker-compose-template.yaml
+docker-makefiles/docker-compose.yaml
