@@ -97,9 +97,9 @@ following networking configurations:
 ## Deploy EdgeLake via Docker
 1. Update `.env` configurations for the node(s) being deployed -- Edit `LEDGER_CONN` in _query_ and _operator_ using  the 
 IP address of master node
-   * [docker_makefile/edgelake_master.env](docker_makefile/edgelake_master.env)
-   * [docker_makefile/edgelake_operator.env](docker_makefile/edgelake_operator.env)
-   * [docker_makefile/edgelake_query.env](docker_makefile/edgelake_query.env)
+   * [docker_makefile/edgelake_master.env](docker-makefiles/edgelake_master.env)
+   * [docker_makefile/edgelake_operator.env](docker-makefiles/edgelake_operator.env)
+   * [docker_makefile/edgelake_query.env](docker-makefiles/edgelake_query.env)
 
 2. Start Node using _makefile_
 ```shell

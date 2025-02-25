@@ -1,90 +1,126 @@
-# Makefile
+#!/bin/Makefile
 
-EDGELAKE_TYPE := generic
+SHELL := /bin/bash
 ifneq ($(filter-out $@,$(MAKECMDGOALS)), )
-	EDGELAKE_TYPE = $(filter-out $@,$(MAKECMDGOALS))
+   export EDGELAKE_TYPE = $(filter-out $@,$(MAKECMDGOALS))
+else
+	export EDGELAKE_TYPE := generic
 endif
 
-export ARCH := $(shell uname -m)
-export TAG := latest
+ARCH := $(shell uname -m)
+export TAG := 1.3.2501
+# Check if the architecture matches aarch64 or arm64
 ifeq ($(ARCH),aarch64)
-    export TAG := latest-arm64
+    TAG := 1.3.2501-arm64
 else ifeq ($(ARCH),arm64)
-    export TAG := latest-arm64
+    TAG := 1.3.2501-arm64
+else
+    TAG := 1.3.2501
 endif
+
 
 export DOCKER_COMPOSE_CMD := $(shell if command -v podman-compose >/dev/null 2>&1; then echo "podman-compose"; \
-	elif command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; \
-	else echo "docker compose"; fi)
+	elif command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; else echo "docker compose"; fi)
+
+
+# Only execute shell commands if NOT called with test-node or test-network
+ifneq ($(filter test-node test-network,$(MAKECMDGOALS)),test-node test-network)
+	export NODE_NAME := $(shell cat docker-makefiles/edgelake_${EDGELAKE_TYPE} | grep NODE_NAME | awk -F "=" '{print $$2}'| sed 's/ /-/g' | tr '[:upper:]' '[:lower:]')
+	export ANYLOG_SERVER_PORT := $(shell cat docker-makefiles/edgelake_${EDGELAKE_TYPE} | grep ANYLOG_SERVER_PORT | awk -F "=" '{print $$2}')
+    export ANYLOG_REST_PORT := $(shell cat docker-makefiles/edgelake_${EDGELAKE_TYPE} | grep ANYLOG_REST_PORT | awk -F "=" '{print $$2}')
+	export ANYLOG_BROKER_PORT := $(shell cat docker-makefiles/edgelake_${EDGELAKE_TYPE} | grep ANYLOG_BROKER_PORT | awk -F "=" '{print $$2}' | grep -v '^$$')
+    export REMOTE_CLI := $(shell cat docker-makefiles/${EDGELAKE_TYPE}-configs/advance_configs.env | grep REMOTE_CLI | awk -F "=" '{print $$2}')
+    export ENABLE_NEBULA := $(shell cat docker-makefiles/${EDGELAKE_TYPE}-configs/advance_configs.env | grep ENABLE_NEBULA | awk -F "=" '{print $$2}')
+    export IMAGE := $(shell cat docker-makefiles/.env | grep IMAGE | awk -F "=" '{print $$2}')
+endif
+
+# Detect OS type
+export OS := $(shell uname -s)
+# Choose Docker Compose template based on OS
+ifeq ($(OS),Linux)
+	export DOCKER_COMPOSE_TEMPLATE := docker-makefiles/docker-compose-template-base.yaml
+else
+	export DOCKER_COMPOSE_TEMPLATE := docker-makefiles/docker-compose-template-ports-base.yaml
+endif
 
 all: help
+login:
+	$(CONTAINER_CMD) login docker.io -u anyloguser --password $(EDGELAKE_TYPE)
+generate-docker-compose:
+	@bash docker-makefiles/update_docker_compose.sh
+	@if [ "$(REMOTE_CLI)" == "true" ] && [ "$(ENABLE_NEBULA)" == "true" ] && [ ! -z "$(ANYLOG_BROKER_PORT)" ]; then \
+  		NODE_NAME="$(NODE_NAME)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml; \
+  	elif [ "$(REMOTE_CLI)" == "false" ] && [ "$(ENABLE_NEBULA)" == "true" ] && [ ! -z "$(ANYLOG_BROKER_PORT)" ]; then \
+  		NODE_NAME="$(NODE_NAME)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml; \
+	elif [ "$(REMOTE_CLI)" == "true" ] && [ "$(ENABLE_NEBULA)" == "false" ] && [ ! -z "$(ANYLOG_BROKER_PORT)" ]; then \
+  		NODE_NAME="$(NODE_NAME)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml; \
+	elif [ "$(REMOTE_CLI)" == "true" ] && [ "$(ENABLE_NEBULA)" == "true" ] && [ -z "$(ANYLOG_BROKER_PORT)" ]; then \
+  		NODE_NAME="$(NODE_NAME)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml; \
+	elif [ "$(REMOTE_CLI)" == "true" ] && [ "$(ENABLE_NEBULA)" == "false" ] && [ -z "$(ANYLOG_BROKER_PORT)" ]; then \
+  		NODE_NAME="$(NODE_NAME)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml; \
+	elif [ "$(REMOTE_CLI)" == "false" ] && [ "$(ENABLE_NEBULA)" == "true" ] && [ -z "$(ANYLOG_BROKER_PORT)" ]; then \
+  		NODE_NAME="$(NODE_NAME)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml; \
+	elif [ "$(REMOTE_CLI)" == "false" ] && [ "$(ENABLE_NEBULA)" == "false" ] && [ ! -z "$(ANYLOG_BROKER_PORT)" ]; then \
+  		NODE_NAME="$(NODE_NAME)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml; \
+  	else \
+  	  ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml; \
+  	fi
+test-conn:
+	@echo "REST Connection Info for testing (Example: 127.0.0.1:32149):"
+	@read CONN; \
+	echo $$CONN > conn.tmp
 build:
-	docker pull anylogco/edgelake:$(TAG)
-up:
-	@echo "Deploy AnyLog with config file: anylog_$(EDGELAKE_TYPE).env"
-	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker_makefile/docker-compose-template.yaml > docker_makefile/docker-compose.yaml
-	@${DOCKER_COMPOSE_CMD} -f docker_makefile/docker-compose.yaml up -d
-	@rm -rf docker_makefile/docker-compose.yaml
-down:
-	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker_makefile/docker-compose-template.yaml > docker_makefile/docker-compose.yaml
-	@${DOCKER_COMPOSE_CMD} -f docker_makefile/docker-compose.yaml down
-	@rm -rf docker_makefile/docker-compose.yaml
-clean-vols:
-	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker_makefile/docker-compose-template.yaml > docker_makefile/docker-compose.yaml
+	$(CONTAINER_CMD) pull docker.io/anylogco/anylog-network:$(TAG)
+dry-run: generate-docker-compose
+	@echo "Dry Run $(EDGELAKE_TYPE)"
+up: generate-docker-compose
+	@echo "Deploy AnyLog $(EDGELAKE_TYPE)"
+	@${DOCKER_COMPOSE_CMD} -f docker-makefiles/docker-compose.yaml up -d
+	@rm -rf docker-makefiles/docker-compose.yaml
+down: generate-docker-compose
+	@echo "Stop AnyLog $(EDGELAKE_TYPE)"
+	@${DOCKER_COMPOSE_CMD} -f docker-makefiles/docker-compose.yaml down
+	@rm -rf docker-makefiles/docker-compose.yaml
+clean-vols: generate-docker-compose
 	@${DOCKER_COMPOSE_CMD} -f docker-makefiles/docker-compose.yaml down --volumes
 	@rm -rf docker-makefiles/docker-compose.yaml
-clean:
-	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < docker_makefile/docker-compose-template.yaml > docker_makefile/docker-compose.yaml
-	@${DOCKER_COMPOSE_CMD} -f docker_makefile/docker-compose.yaml down -v --rmi all
-	@rm -rf docker_makefile/docker-compose.yaml
+clean: generate-docker-compose
+	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < $(DOCKER_COMPOSE_TEMPLATE) > docker-makefiles/docker-compose.yaml
+	@${DOCKER_COMPOSE_CMD} -f docker-makefiles/docker-compose.yaml down --volumes --rmi all
+	@rm -rf docker-makefiles/docker-compose.yaml
 attach:
-	docker attach --detach-keys=ctrl-d edgelake-$(EDGELAKE_TYPE)
-node-status:
-	@if [ "$(EDGELAKE_TYPE)" = "master" ]; then \
-		curl -X GET 127.0.0.1:32049 -H "command: get status" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	elif [ "$(EDGELAKE_TYPE)" = "operator" ]; then \
-		curl -X GET 127.0.0.1:32149 -H "command: get status" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	elif [ "$(EDGELAKE_TYPE)" = "query" ]; then \
-		curl -X GET 127.0.0.1:32349 -H "command: get status" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	elif [ "$(NODE_TYPE)" == "generic" ]; then \
-		curl -X GET 127.0.0.1:32549 -H "command: get status" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	fi
-test-node:
-	@if [ "$(EDGELAKE_TYPE)" = "master" ]; then \
-		curl -X GET 127.0.0.1:32049 -H "command: test node" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	elif [ "$(EDGELAKE_TYPE)" = "operator" ]; then \
-		curl -X GET 127.0.0.1:32149 -H "command: test node" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	elif [ "$(EDGELAKE_TYPE)" = "query" ]; then \
-		curl -X GET 127.0.0.1:32349 -H "command: test node" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	elif [ "$(NODE_TYPE)" == "generic" ]; then \
-		curl -X GET 127.0.0.1:32549 -H "command: test node" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	fi
-test-network:
-	@if [ "$(EDGELAKE_TYPE)" = "master" ]; then \
-		curl -X GET 127.0.0.1:32049 -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	elif [ "$(EDGELAKE_TYPE)" = "operator" ]; then \
-		curl -X GET 127.0.0.1:32149 -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	elif [ "$(EDGELAKE_TYPE)" = "query" ]; then \
-		curl -X GET 127.0.0.1:32349 -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	elif [ "$(NODE_TYPE)" == "generic" ]; then \
-		curl -X GET 127.0.0.1:32549 -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"; \
-	fi
+	@$(CONTAINER_CMD) attach --detach-keys=ctrl-d anylog-$(EDGELAKE_TYPE)
+test-node: test-conn
+	@CONN=$$(cat conn.tmp); \
+	echo "Node State against $$CONN"; \
+	curl -X GET http://$$CONN -H "command: get status"    -H "User-Agent: AnyLog/1.23" -w "\n"; \
+	curl -X GET http://$$CONN -H "command: test node"     -H "User-Agent: AnyLog/1.23" -w "\n"; \
+	curl -X GET http://$$CONN -H "command: get processes" -H "User-Agent: AnyLog/1.23" -w "\n"; \
+	rm -rf conn.tmp
+
+test-network: test-conn
+	@CONN=$$(cat conn.tmp); \
+	echo "Test Network Against: $$CONN"; \
+	curl -X GET http://$$CONN -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"; \
+	rm -rf conn.tmp
 exec:
-	docker exec -it edgelake-$(EDGELAKE_TYPE) bash
+	@$(CONTAINER_CMD) exec -it anylog-$(EDGELAKE_TYPE) bash
 logs:
-	docker logs edgelake-$(EDGELAKE_TYPE)
+	@$(CONTAINER_CMD) logs anylog-$(EDGELAKE_TYPE)
 help:
-	@echo "Usage: make [target] [edgelake-type]"
+	@echo "Usage: make [target] [anylog-type]"
 	@echo "Targets:"
-	@echo "  build       Pull the docker image"
-	@echo "  up          Start the containers"
-	@echo "  attach      Attach to EdgeLake instance"
-	@echo "  test        Using cURL validate node is running"
-	@echo "  exec        Attach to shell interface for container"
-	@echo "  down        Stop and remove the containers"
-	@echo "  logs        View logs of the containers"
-	@echo "  clean-vols  Stop and remove the containers and remove image and volumes"
-	@echo "  clean       Stop and remove the containers and remove volumes "
-	@echo "  help        Show this help message"
-	@echo "  supported EdgeLake types: generic, master, operator, and query"
-	@echo "Sample calls: make up EDGELAKE_TYPE=master | make attach EDGELAKE_TYPE=master | make clean EDGELAKE_TYPE=master"
+	@echo "  login       	Log into AnyLog's Dockerhub - use EDGELAKE_TYPE to set password value"
+	@echo "  build       	Pull the docker image"
+	@echo "  up	  		 	Start the containers"
+	@echo "  attach      	Attach to AnyLog instance"
+	@echo "  test-node		Validate node status"
+	@echo "  test-network	Validate node can communicate with other nodes in the network"
+	@echo "  exec			Attach to shell interface for container"
+	@echo "  down			Stop and remove the containers"
+	@echo "  logs			View logs of the containers"
+	@echo "  clean-vols 	stop & clean volumes"
+	@echo "  clean       	stop & clean up volumes and image"
+	@echo "  help			show this help message"
+	@echo "supported AnyLog types: generic, master, operator, and query"
+	@echo "Sample calls: make up master | make attach master | make clean master"
