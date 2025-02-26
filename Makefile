@@ -74,11 +74,11 @@ build:
 dry-run: generate-docker-compose
 	@echo "Dry Run $(EDGELAKE_TYPE)"
 up: generate-docker-compose
-	@echo "Deploy AnyLog $(EDGELAKE_TYPE)"
+	@echo "Deploy EdgeLake $(EDGELAKE_TYPE)"
 	@${DOCKER_COMPOSE_CMD} -f docker-makefiles/docker-compose.yaml up -d
 	@rm -rf docker-makefiles/docker-compose.yaml
 down: generate-docker-compose
-	@echo "Stop AnyLog $(EDGELAKE_TYPE)"
+	@echo "Stop EdgeLake $(EDGELAKE_TYPE)"
 	@${DOCKER_COMPOSE_CMD} -f docker-makefiles/docker-compose.yaml down
 	@rm -rf docker-makefiles/docker-compose.yaml
 clean-vols: generate-docker-compose
@@ -104,23 +104,23 @@ test-network: test-conn
 	curl -X GET http://$$CONN -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"; \
 	rm -rf conn.tmp
 exec:
-	@$(CONTAINER_CMD) exec -it anylog-$(EDGELAKE_TYPE) bash
+	@$(CONTAINER_CMD) exec -it edgelake-$(EDGELAKE_TYPE) bash
 logs:
-	@$(CONTAINER_CMD) logs anylog-$(EDGELAKE_TYPE)
+	@$(CONTAINER_CMD) logs edgelake-$(EDGELAKE_TYPE)
 help:
-	@echo "Usage: make [target] [anylog-type]"
+	@echo "Usage: make [target] [edgelake-type]"
 	@echo "Targets:"
 	@echo "  login       	Log into AnyLog's Dockerhub - use EDGELAKE_TYPE to set password value"
 	@echo "  build       	Pull the docker image"
-	@echo "  up	  		 	Start the containers"
+	@echo "  up	  	Start the containers"
 	@echo "  attach      	Attach to AnyLog instance"
-	@echo "  test-node		Validate node status"
+	@echo "  test-node	Validate node status"
 	@echo "  test-network	Validate node can communicate with other nodes in the network"
-	@echo "  exec			Attach to shell interface for container"
-	@echo "  down			Stop and remove the containers"
-	@echo "  logs			View logs of the containers"
+	@echo "  exec		Attach to shell interface for container"
+	@echo "  down		Stop and remove the containers"
+	@echo "  logs		View logs of the containers"
 	@echo "  clean-vols 	stop & clean volumes"
 	@echo "  clean       	stop & clean up volumes and image"
-	@echo "  help			show this help message"
+	@echo "  help		show this help message"
 	@echo "supported AnyLog types: generic, master, operator, and query"
 	@echo "Sample calls: make up master | make attach master | make clean master"
