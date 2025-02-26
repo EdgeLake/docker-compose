@@ -54,7 +54,7 @@ following networking configurations:
       <td>32049</td>
       <td><code>docker run -it -d \ 
 <br/>-p 32048:32048 \
-<br/>-p 320498:32049 \
+<br/>-p 32049:32049 \
 <br/>-e NODE_TYPE=master \
 <br/>--name edgelake-master --rm anylogco/edgelake:latest</code></td>
    </tr>
