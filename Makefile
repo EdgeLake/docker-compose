@@ -91,7 +91,7 @@ clean: generate-docker-compose
 	@${DOCKER_COMPOSE_CMD} -f docker-makefiles/docker-compose.yaml down --volumes --rmi all
 	@rm -rf docker-makefiles/docker-compose.yaml docker-makefiles/docker-compose-template.yaml 
 attach:
-	@$(CONTAINER_CMD) attach --detach-keys=ctrl-d anylog-$(EDGELAKE_TYPE)
+	@$(CONTAINER_CMD) attach --detach-keys=ctrl-d $(NODE_NAME)
 test-node: test-conn
 	@CONN=$$(cat conn.tmp); \
 	echo "Node State against $$CONN"; \
@@ -106,9 +106,9 @@ test-network: test-conn
 	curl -X GET http://$$CONN -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"; \
 	rm -rf conn.tmp
 exec:
-	@$(CONTAINER_CMD) exec -it edgelake-$(EDGELAKE_TYPE) bash
+	@$(CONTAINER_CMD) exec -it $(NODE_NAME) bash
 logs:
-	@$(CONTAINER_CMD) logs edgelake-$(EDGELAKE_TYPE)
+	@$(CONTAINER_CMD) logs $(NODE_NAME)
 help:
 	@echo "Usage: make [target] [edgelake-type]"
 	@echo "Targets:"
