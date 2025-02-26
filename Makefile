@@ -18,6 +18,8 @@ else
     TAG := 1.3.2501
 endif
 
+export CONTAINER_CMD := $(shell if command -v podman >/dev/null 2>&1; then echo "podman"; \
+	else echo "docker"; fi)
 
 export DOCKER_COMPOSE_CMD := $(shell if command -v podman-compose >/dev/null 2>&1; then echo "podman-compose"; \
 	elif command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; else echo "docker compose"; fi)
@@ -70,24 +72,24 @@ test-conn:
 	@read CONN; \
 	echo $$CONN > conn.tmp
 build:
-	$(CONTAINER_CMD) pull docker.io/anylogco/anylog-network:$(TAG)
+	$(CONTAINER_CMD) pull docker.io/anylogco/$(IMAGE):$(TAG)
 dry-run: generate-docker-compose
 	@echo "Dry Run $(EDGELAKE_TYPE)"
 up: generate-docker-compose
 	@echo "Deploy EdgeLake $(EDGELAKE_TYPE)"
 	@${DOCKER_COMPOSE_CMD} -f docker-makefiles/docker-compose.yaml up -d
-	@rm -rf docker-makefiles/docker-compose.yaml
+	@rm -rf docker-makefiles/docker-compose.yaml docker-makefiles/docker-compose-template.yaml 
 down: generate-docker-compose
 	@echo "Stop EdgeLake $(EDGELAKE_TYPE)"
 	@${DOCKER_COMPOSE_CMD} -f docker-makefiles/docker-compose.yaml down
-	@rm -rf docker-makefiles/docker-compose.yaml
+	@rm -rf docker-makefiles/docker-compose.yaml docker-makefiles/docker-compose-template.yaml 
 clean-vols: generate-docker-compose
 	@${DOCKER_COMPOSE_CMD} -f docker-makefiles/docker-compose.yaml down --volumes
-	@rm -rf docker-makefiles/docker-compose.yaml
+	@rm -rf docker-makefiles/docker-compose.yaml docker-makefiles/docker-compose-template.yaml 
 clean: generate-docker-compose
 	EDGELAKE_TYPE=$(EDGELAKE_TYPE) envsubst < $(DOCKER_COMPOSE_TEMPLATE) > docker-makefiles/docker-compose.yaml
 	@${DOCKER_COMPOSE_CMD} -f docker-makefiles/docker-compose.yaml down --volumes --rmi all
-	@rm -rf docker-makefiles/docker-compose.yaml
+	@rm -rf docker-makefiles/docker-compose.yaml docker-makefiles/docker-compose-template.yaml 
 attach:
 	@$(CONTAINER_CMD) attach --detach-keys=ctrl-d anylog-$(EDGELAKE_TYPE)
 test-node: test-conn
