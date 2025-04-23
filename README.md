@@ -1,238 +1,162 @@
 # Deploying EdgeLake
 
-The following provides direction to deploy EdgeLake using [_makefile_](Makefile) for Docker-based deployment.
+EdgeLake provides Real-Time Visibility and Management of Distributed Edge Data, Applications and Infrastructure. EdgeLake 
+transforms the edge to a scalable data tier that is optimized for IoT data, enabling organizations to extract real-time 
+insight for any use case in any industries spanning Manufacturing, Utilities, Oil & Gas, Retail, Robotics, Smart Cities, 
+Automotive, and more.
 
+* [Documentation](https://edgelake.github.io/)
 * [EdgeLake Source Code](https://github.com/EdgeLake/EdgeLake)
+* [Surrounding components install](support.md)
 
-#### Requirements
-* _[Docker & Docker Compose](https://docs.docker.com/desktop/install/linux/)_
-* _Makefile_
-
-**Direction for Ubuntu**: For Ubuntu we've noticed that version 22.04LTS is much more stable as compared to 24.04LTS. 
-```shell
-# Add Docker's official GPG key:
-sudo apt-get -y update
-sudo apt-get install -y ca-certificates curl make git curl 
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-sudo chmod a+r /etc/apt/keyrings/docker.asc
-
-# Add the repository to Apt sources:
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get -y update
-
-sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin make 
-
-# Grant non-root user permissions to use docker
-USER=`whoami` 
-sudo groupadd docker 
-sudo usermod -aG docker ${USER} 
-newgrp docker
-```
-
-**CentOS**: The directions for CentOS download the package for CentOS9 directly from [Docker Downloads](https://download.docker.com/). 
-Users can utilize the same process to install _Docker_ / _Docker Compose_ on any operating system. 
-
-```shell
-# Install Dependencies
-sudo yum install -y curl wget make git yum-utils device-mapper-persistent-data lvm2
-
-# Manually Download rpm packages 
-mkdir $HOME/rpm-pkgs ; cd $HOME/rpm-pkgs
-curl https://download.docker.com/linux/centos/9/x86_64/stable/Packages/docker-ce-27.2.1-1.el9.x86_64.rpm -o docker-ce.rpm 
-curl https://download.docker.com/linux/centos/9/x86_64/stable/Packages/docker-ce-cli-27.2.1-1.el9.x86_64.rpm -o docker-ce-cli.rpm
-curl https://download.docker.com/linux/centos/9/x86_64/stable/Packages/containerd.io-1.7.22-3.1.el9.x86_64.rpm -o containerd.io.rpm
-
-# Install packages
-sudo yum -y install ./docker-ce.rpm
-sudo yum -y install ./docker-ce-cli.rpm
-sudo yum -y install ./containerd.io.rpm
-
-# Enable Docker Service
-sudo systemctl start docker
-sudo systemctl enable docker
-
-# Grant non-root user permissions to use docker
-USER=`whoami` 
-sudo groupadd docker 
-sudo usermod -aG docker ${USER} 
-newgrp docker
-```
-
-**Suse**: These are the directions to install for Suse Leap Enterprise Server 15.6.  The directions for CentOS download the package for CentOS9 directly from [Docker Downloads](https://download.docker.com/). 
-Users can utilize the same process to install _Docker_ / _Docker Compose_ on any operating system. 
-
-```shell
-# Install Dependencies
-sudo zypper install git-core make
-
-# Run Yast to install docker, docker-compose and dependencies from Software->Software Management
-sudo yast
-
-# Enable Docker Service
-sudo systemctl start docker
-sudo systemctl enable docker
-
-# Grant non-root user permissions to use docker
-USER=`whoami` 
-sudo groupadd docker 
-sudo usermod -aG docker ${USER} 
-newgrp docker
-```
-
-**RHEL**: These are the directions to install for RedHat Enterprise Linux 8.10.  The directions for Redhat download the package for Redhat directly from [Docker Downloads](https://download.docker.com/). 
-Users can utilize the same process to install _Docker_ / _Docker Compose_ on any operating system.
-
-```shell
-# Install Dependencies
-sudo yum install -y yum-utils
-sudo yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
-
-# Run yum to install docker, docker-compose and dependencies 
-sudo yum --allowerasing install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
-# Install docker compose
-sudo curl -SL https://github.com/docker/compose/releases/download/v2.29.4/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-
-# Enable Docker Service
-sudo systemctl start docker
-sudo systemctl enable docker
-
-# Grant non-root user permissions to use docker
-USER=`whoami` 
-sudo groupadd docker 
-sudo usermod -aG docker ${USER} 
-newgrp docker
-```
-
-**Direction for Debian**: 
-```shell
-# Add Docker's official GPG key:
-sudo apt-get update
-sudo apt-get install ca-certificates curl
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
-sudo chmod a+r /etc/apt/keyrings/docker.asc
-
-# Add the repository to Apt sources:
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
-
-sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin make 
-
-# Grant non-root user permissions to use docker
-USER=`whoami` 
-sudo groupadd docker 
-sudo usermod -aG docker ${USER} 
-newgrp docker
-```
 
 ## Prepare Machine
-Clone _docker-compose_ from EdgeLake repository
+* [Docker & Docker-Compose](https://docs.docker.com/engine/install/)
+* _Makefile_
+```shell
+sudo snap install docker
+sudo apt-get -y install docker-compose 
+sudo apt-get -y install make
+ 
+# Grant non-root user permissions to use docker
+USER=`whoami`
+sudo groupadd docker 
+sudo usermod -aG docker ${USER} 
+newgrp docker
+```
+
+* Clone _docker-compose_ from EdgeLake repository
 ```shell
 git clone https://github.com/EdgeLake/docker-compose
 cd docker-compose
 ```
 
-## Deploy EdgeLake via Docker 
-1. Edit LEDGER_CONN in query and operator using IP address of master node
-2. Update `.env` configurations for the node(s) being deployed. Extensive list of configuration options can be found in the <a href="https://github.com/AnyLog-co/docker-compose/" target="_blank">enterprise deployment</a>  
-   * [docker_makefile/edgelake_generic.env](docker_makefile/edgelake_generic.env) - A "sandbox" node consisting of only TCP, REST and optionally Message broker services
-   * [docker_makefile/edgelake_master.env](docker_makefile/edgelake_master.env) - A node with services that allow managing network metadata as an alternative to the blockchain
-   * [docker_makefile/edgelake_operator.env](docker_makefile/edgelake_operator.env) - A node with services that allow to store and manage IoT / edge data in real-time.
-   * [docker_makefile/edgelake_query.env](docker_makefile/edgelake_query.env) - A node with services that are dedicated to querying data on an operator node
+## Basic Deployment
+EdgeLake deployment contains  predefined configurations for each node type, enabling users to deploy a network with a 
+simple `docker run` command. This approach allows for quick deployment with minimal configuration but is limited to one 
+node type per machine. To overcome this limitation, additional environment configurations can be provided.
 
-```dotenv
-#--- General ---
-# Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
-NODE_TYPE=master
-# Name of the AnyLog instance
-NODE_NAME=anylog-master
-# Owner of the AnyLog instance
-COMPANY_NAME=New Company
+### Default Deployment and Networking Configuration
+When deploying using the basic command, the container utilizes the default parameters based on `NODE_TYPE`, with the 
+following networking configurations:
 
-#--- Networking ---
-# Port address used by AnyLog's TCP protocol to communicate with other nodes in the network
-ANYLOG_SERVER_PORT=32048
-# Port address used by AnyLog's REST protocol
-ANYLOG_REST_PORT=32049
-# A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
-TCP_BIND=false
-# A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
-REST_BIND=false
+<html>
+<table>
+   <tr>
+      <th>Node Type</th>
+      <th>Server Port</th>
+      <th>Rest Port</th>
+      <th>Run command</th>
+   </tr>
+   <tr>
+      <td>Master</td>
+      <td>32048</td>
+      <td>32049</td>
+      <td><code>docker run -it -d \ 
+<br/>-p 32048:32048 \
+<br/>-p 32049:32049 \
+<br/>-e NODE_TYPE=master \
+<br/>--name edgelake-master --rm anylogco/edgelake:latest</code></td>
+   </tr>
+   <tr>
+      <td>Operator</td>
+      <td>32148</td>
+      <td>32149</td>
+      <td><code>docker run -it -d \ 
+<br/>-p 32148:32148 \
+<br/>-p 32149:32149 \
+<br/>-e NODE_TYPE=operator \
+<br/>-e LEDGER_CONN=[MASTER_NODE IP:Port] \
+<br/>--name edgelake-operator --rm anylogco/edgelake:latest</code></td>
+   </tr>
+   <tr>
+      <td>Query</td>
+      <td>32348</td>
+      <td>32349</td>
+      <td><code>docker run -it -d \ 
+<br/>-p 32348:32348 \
+<br/>-p 32349:32349 \
+<br/>-e NODE_TYPE=query \
+<br/>-e LEDGER_CONN=[MASTER_NODE IP:Port] \
+<br/>--name edgelake-query --rm anylogco/edgelake:latest</code></td>
+   </tr>
+   <tr>
+      <td>Generic</td>
+      <td>3548</td>
+      <td>32549</td>
+      <td><code>docker run -it -d \ 
+<br/>-p 32548:32548 \
+<br/>-p 32549:32549 \
+<br/>-e NODE_TYPE=generic \
+<br/>--name edgelake-node --rm anylogco/edgelake:latest</code></td>
+   </tr>
+</table>
+</html>
 
-#--- Blockchain ---
-# TCP connection information for Master Node
-LEDGER_CONN=127.0.0.1:32048
 
-#--- Advanced Settings ---
-# Whether to automatically run a local (or personalized) script at the end of the process
-DEPLOY_LOCAL_SCRIPT=false
-```
+## Deploy EdgeLake via Docker
+1. Update `.env` configurations for the node(s) being deployed -- Edit `LEDGER_CONN` in _query_ and _operator_ using  the 
+IP address of master node
+   * [docker_makefile/edgelake_master.env](docker-makefiles/edgelake_master.env)
+   * [docker_makefile/edgelake_operator.env](docker-makefiles/edgelake_operator.env)
+   * [docker_makefile/edgelake_query.env](docker-makefiles/edgelake_query.env)
 
-3. Start Node using _makefile_
+2. Start Node using _makefile_
 ```shell
 make up EDGELAKE_TYPE=[NODE_TYPE]
 ```
 
 ### Makefile Commands for Docker
-* help
 ```shell
-Usage: make [target] EDGELAKE_TYPE=[anylog-type]
 Targets:
   build       Pull the docker image
   up          Start the containers
   attach      Attach to EdgeLake instance
+  test        Using cURL validate node is running
   exec        Attach to shell interface for container
   down        Stop and remove the containers
   logs        View logs of the containers
-  clean       Clean up volumes and network
+  clean-vols  Stop and remove the containers and remove image and volumes
+  clean       Stop and remove the containers and remove volumes 
   help        Show this help message
-         supported EdgeLake types: master, operator and query
+  supported EdgeLake types: generic, master, operator, and query
 Sample calls: make up EDGELAKE_TYPE=master | make attach EDGELAKE_TYPE=master | make clean EDGELAKE_TYPE=master
 ```
 
-* Bring up a _query_ node
-```shell
-make up EDGELAKE_TYPE=query
+## Advanced configurations
+Provides a subset of the configurations required to deploy a node. A full list of the configurations can be found in
+AnyLog's [Docker Compose repository](https://github.com/AnyLog-co/docker-compose/tree/main/docker-makefile). 
+
+Configurations include:
+* manually set geolocation 
+* threading and pool sizes
+* utilize live blockchain rather than master node
+* [Overlay network](#overlay-network)
+* [Deploying personalized scripts](https://github.com/AnyLog-co/documentation/blob/master/deployments/executing_scripts.md)
+
+### Overlay Network
+One of the things we offer a fully integrated connection to <a href="https://nebula.defined.net/docs" target="_blank">Nebula Overlay Network</a>.
+
+* [Nebula - In General](https://github.com/AnyLog-co/documentation/blob/master/deployments/Networking%20%26%20Security/nebula.md)
+* [Preparing for Nebula](https://github.com/AnyLog-co/documentation/blob/master/deployments/Networking%20%26%20Security/nebula_through_anylog.md)
+* [Configuring Overlay Network](https://github.com/AnyLog-co/documentation/blob/master/deployments/Networking%20%26%20Security/Configuring%20Overlay%20with%20AnyLog.md)
+
+To deploy, update configurations with the following params
+```dotenv
+# Overlay IP address - if set, will replace local IP address when connecting to network
+OVERLAY_IP=""
+
+# whether to enable Lighthouse
+ENABLE_NEBULA=false
+# create new nebula keys
+NEBULA_NEW_KEYS=false
+# whether node is type lighthouse
+IS_LIGHTHOUSE=false
+# Nebula CIDR IP address for itself - the IP component should be the same as the OVERLAY_IP (ex. 10.10.1.15/24)
+CIDR_OVERLAY_ADDRESS=10.10.1.1/24
+# Nebula IP address for Lighthouse node (ex. 10.10.1.15)
+LIGHTHOUSE_IP=10.10.1.1
+# External physical IP of the node associated with Nebula lighthouse
+LIGHTHOUSE_NODE_IP=172.232.250.209
 ```
 
-* Attach to _query_ node
-```shell
-# to detach: ctrl-d
-make attach EDGELAKE_TYPE=query  
-```
-
-* Bring down _query_ node
-```shell
-make down EDGELAKE_TYPE=query
-```
-If a _node-type_ is not set, then a generic node would automatically be used    
-
-
-## Makefile Commands 
-* `build` - pull docker image 
-* `up` - Using _docker-compose_, start a container of AnyLog based on node type
-* `attach` - Attach to an AnyLog docker container based on node type
-* `exec` - Attach to the shell interface of an AnyLog docker container, based on the node type 
-* `log` - check docker container logs based on container type
-* `down` - Stop container based on node type 
-* `clean` - remove everything associated with container (including volume and image) based on node type
- 
-
-## Deploy EdgeLake via Command Line 
-
-The following provides an example for deploying EdgeLake via CLI. Users can [specify configurations](docker-makefiles/edgelake_generic.env), 
-or run with defaults, in which case, a node with only TCP and REST connectivity will be deployed.
-
-```shell 
-docker run -it --network host --name edgelake-generic --rm anylogco/edgelake:latest
-```
-Note, unless specified the default ports are 32548 (TCP) and 32549 (REST) 
