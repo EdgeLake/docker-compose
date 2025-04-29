@@ -150,7 +150,7 @@ endif
 else
 	@$(MAKE) generate-docker-compose
 	@$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose.yaml up -d
-	@rm -f docker-makefiles/docker-compose.yaml
+	@rm -f docker-makefiles/docker-compose.yaml docker-makefiles/docker-compose-template.yaml
 endif
 
 down: ## Stop EdgeLake instance
@@ -160,7 +160,7 @@ ifeq ($(IS_MANUAL),true)
 else
 	@$(MAKE) generate-docker-compose
 	@$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose.yaml down
-	@rm -f docker-makefiles/docker-compose.yaml
+	@rm -f docker-makefiles/docker-compose.yaml docker-makefiles/docker-compose-template.yaml
 endif
 
 clean-vols: ## Stop EdgeLake instance and remove associated volumes
@@ -171,7 +171,7 @@ ifeq ($(IS_MANUAL),true)
 else
 	@$(MAKE) generate-docker-compose
 	@$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose.yaml down --volumes
-	@rm -f docker-makefiles/docker-compose.yaml
+	@rm -f docker-makefiles/docker-compose.yaml docker-makefiles/docker-compose-template.yaml
 endif
 
 clean: ## Stop AnyLog instance and remove associated volumes & image
@@ -183,7 +183,7 @@ ifeq ($(IS_MANUAL),true)
 else
 	@$(MAKE) generate-docker-compose
 	@$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose.yaml down --volumes --rmi all
-	@rm -f docker-makefiles/docker-compose.yaml
+	@rm -f docker-makefiles/docker-compose.yaml docker-makefiles/docker-compose-template.yaml
 endif
 
 attach: ## Attach to docker / podman container (use ctrl-d to detach)
