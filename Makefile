@@ -12,6 +12,7 @@ export ANYLOG_BROKER_PORT ?=
 export LEDGER_CONN ?= 127.0.0.1:32049
 export IS_MANUAL ?= false
 export TEST_CONN ?=
+export NIC_TYPE ?=
 
 # Detect OS type
 export OS := $(shell uname -s)
@@ -120,6 +121,7 @@ ifeq ($(OS),Linux)
 		-e NODE_NAME=$(NODE_NAME) \
 		-e CLUSTER_NAME=$(CLUSTER_NAME) \
 		-e LEDGER_CONN=$(LEDGER_CONN) \
+		$(if $(NID_TYPE},-e NIC_TYPE=$(NIC_TYPE)) \
 		$(if $(ANYLOG_BROKER_PORT),-e ANYLOG_BROKER_PORT=$(ANYLOG_BROKER_PORT)) \
 		-v $(NODE_NAME)-anylog:/app/EdgeLake/anylog \
 		-v $(NODE_NAME)-blockchain:/app/EdgeLake/blockchain \
@@ -139,6 +141,7 @@ else
 		-e NODE_NAME=$(NODE_NAME) \
 		-e CLUSTER_NAME=$(CLUSTER_NAME) \
 		-e LEDGER_CONN=$(LEDGER_CONN) \
+		$(if $(NID_TYPE},-e NIC_TYPE=$(NIC_TYPE)) \
 		$(if $(ANYLOG_BROKER_PORT),-e ANYLOG_BROKER_PORT=$(ANYLOG_BROKER_PORT)) \
 		-v $(NODE_NAME)-anylog:/app/EdgeLake/anylog \
 		-v $(NODE_NAME)-blockchain:/app/EdgeLake/blockchain \
