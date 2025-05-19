@@ -121,7 +121,7 @@ ifeq ($(OS),Linux)
 		-e NODE_NAME=$(NODE_NAME) \
 		-e CLUSTER_NAME=$(CLUSTER_NAME) \
 		-e LEDGER_CONN=$(LEDGER_CONN) \
-		$(if $(NID_TYPE},-e NIC_TYPE=$(NIC_TYPE)) \
+		$(if $(NIC_TYPE),-e NIC_TYPE=$(NIC_TYPE)) \
 		$(if $(ANYLOG_BROKER_PORT),-e ANYLOG_BROKER_PORT=$(ANYLOG_BROKER_PORT)) \
 		-v $(NODE_NAME)-anylog:/app/EdgeLake/anylog \
 		-v $(NODE_NAME)-blockchain:/app/EdgeLake/blockchain \
@@ -141,7 +141,7 @@ else
 		-e NODE_NAME=$(NODE_NAME) \
 		-e CLUSTER_NAME=$(CLUSTER_NAME) \
 		-e LEDGER_CONN=$(LEDGER_CONN) \
-		$(if $(NID_TYPE},-e NIC_TYPE=$(NIC_TYPE)) \
+		$(if $(NIC_TYPE),-e NIC_TYPE=$(NIC_TYPE)) \
 		$(if $(ANYLOG_BROKER_PORT),-e ANYLOG_BROKER_PORT=$(ANYLOG_BROKER_PORT)) \
 		-v $(NODE_NAME)-anylog:/app/EdgeLake/anylog \
 		-v $(NODE_NAME)-blockchain:/app/EdgeLake/blockchain \
