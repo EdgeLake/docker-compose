@@ -77,13 +77,13 @@ ifeq ($(IS_MANUAL), false)
       $(error Environment file '$(ENV_FILE)' not found. Please check EDGELAKE_TYPE or ensure the file exists.)
     endif
 
-    export NODE_NAME := $(shell cat $(ENV_FILE) | grep "NODE_NAME=" | awk -F "=" '{print $$2}'| sed 's/ /-/g' | tr '[:upper:]' '[:lower:]')
-    export ANYLOG_SERVER_PORT := $(shell cat $(ENV_FILE) | grep "ANYLOG_SERVER_PORT=" | awk -F "=" '{print $$2}')
-    export ANYLOG_REST_PORT := $(shell cat $(ENV_FILE) | grep "ANYLOG_REST_PORT=" | awk -F "=" '{print $$2}')
-    export ANYLOG_BROKER_PORT := $(shell cat $(ENV_FILE) | grep "ANYLOG_BROKER_PORT=" | awk -F "=" '{print $$2}' | grep -v '^$$')
-    export REMOTE_CLI := $(shell cat $(ENV_FILE) | grep "REMOTE_CLI=" | awk -F "=" '{print $$2}')
-    export ENABLE_NEBULA := $(shell cat $(ENV_FILE) | grep "ENABLE_NEBULA=" | awk -F "=" '{print $$2}')
-    export IMAGE := $(shell cat docker-makefiles/.env | grep "IMAGE=" | awk -F "=" '{print $$2}')
+    export NODE_NAME := $(shell cat $(ENV_FILE) | grep -m 1 "NODE_NAME=" | awk -F "=" '{print $$2}'| sed 's/ /-/g' | tr '[:upper:]' '[:lower:]')
+    export ANYLOG_SERVER_PORT := $(shell cat $(ENV_FILE) | grep -m 1 "ANYLOG_SERVER_PORT=" | awk -F "=" '{print $$2}')
+    export ANYLOG_REST_PORT := $(shell cat $(ENV_FILE) | grep -m 1 "ANYLOG_REST_PORT=" | awk -F "=" '{print $$2}')
+    export ANYLOG_BROKER_PORT := $(shell cat $(ENV_FILE) | grep -m 1 "ANYLOG_BROKER_PORT=" | awk -F "=" '{print $$2}' | grep -v '^$$')
+    export REMOTE_CLI := $(shell cat $(ENV_FILE) | grep -m 1 "REMOTE_CLI=" | awk -F "=" '{print $$2}')
+    export ENABLE_NEBULA := $(shell cat $(ENV_FILE) | grep -m 1 "ENABLE_NEBULA=" | awk -F "=" '{print $$2}')
+    export IMAGE := $(shell cat docker-makefiles/.env | grep -m 1 "IMAGE=" | awk -F "=" '{print $$2}')
   endif
 
   ifeq ($(OS),Linux)
