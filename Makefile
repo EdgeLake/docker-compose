@@ -81,7 +81,7 @@ ifeq ($(IS_MANUAL), false)
     export ANYLOG_SERVER_PORT := $(shell cat $(ENV_FILE) | grep ANYLOG_SERVER_PORT | awk -F "=" '{print $$2}')
     export ANYLOG_REST_PORT := $(shell cat $(ENV_FILE) | grep ANYLOG_REST_PORT | awk -F "=" '{print $$2}')
     export ANYLOG_BROKER_PORT := $(shell cat $(ENV_FILE) | grep ANYLOG_BROKER_PORT | awk -F "=" '{print $$2}' | grep -v '^$$')
-    export REMOTE_CLI := $(shell cat $(ENV_FILE) | grep REMOTE_CLI | awk -F "=" '{print $$2}')
+    export REMOTE_CLI := $(shell cat $(ENV_FILE) | grep -m 1 REMOTE_CLI | awk -F "=" '{print $$2}')
     export ENABLE_NEBULA := $(shell cat $(ENV_FILE) | grep ENABLE_NEBULA | awk -F "=" '{print $$2}')
     export IMAGE := $(shell cat docker-makefiles/.env | grep IMAGE | awk -F "=" '{print $$2}')
   endif
