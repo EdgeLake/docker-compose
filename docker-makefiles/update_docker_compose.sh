@@ -68,6 +68,6 @@ fi
 
 # Finalize
 cp "$COMPOSE_FILE" "$OUTPUT_FILE"
-#rm -f "$COMPOSE_FILE"
+rm -f "$COMPOSE_FILE"
 
 echo "✅ Modified docker-compose file saved as $OUTPUT_FILE"
