@@ -87,7 +87,7 @@ LEDGER_CONN=192.168.86.20:32048
 
 2. Start Query Node 
 ```shell
-make up EDGELAKE_TYPE=master
+make up EDGELAKE_TYPE=query
 ```
 
 
