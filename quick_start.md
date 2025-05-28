@@ -135,7 +135,7 @@ DBMS="new_company"                # Logical DB name
 TABLE="my_table"                  # Table name
 
 curl -X GET http://${CONN} \
-  -H "sql ${DBMS} format=table SELECT * FROM ${table}" \
+  -H "sql ${DBMS} format=table SELECT * FROM ${TABLE}" \
   -H "User-Agent: AnyLog/1.23" \
   -H "destination: network"
 ```
