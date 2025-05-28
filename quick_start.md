@@ -13,6 +13,15 @@
 | Query | 32348 | 32349 | 
 
 ## Deployment
+
+**Clone EdgeLake's docker-compose**
+
+```shell
+cd $HOME/
+git clone https://github.com/EdgeLake/docker-compose
+cd docker-compose/
+```
+
 **Master**: 
 1. In [docker-makefiles/edgelake_master.env](docker-makefiles/edgelake_master.env), update the IP address of the 
 LEDGER_CONN to the IP of the machine. 
