@@ -49,7 +49,7 @@ LEDGER_CONN=127.0.0.1:32048
 LEDGER_CONN=192.168.86.20:32048
 ```
 
-You may also update other configurations in the dotenv file, such as: Logical database name and Enable MQTT client, to get random data
+You can also configure other options in the .env file, including setting the logical database name and enabling the MQTT client to simulate random data generation.
 
 2. Start Operator Node 
 ```shell
@@ -67,7 +67,7 @@ LEDGER_CONN=127.0.0.1:32048
 LEDGER_CONN=192.168.86.20:32048
 ```
 
-You may also update other configurations in the dotenv file, such as: Logical database name and Enable MQTT client, to get random data
+You can also configure other options in the .env file, including setting the logical database name and enabling the MQTT client to simulate random data generation.
 
 2. Start Operator Node 
 ```shell
