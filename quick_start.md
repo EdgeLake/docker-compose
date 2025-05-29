@@ -9,8 +9,7 @@
 | :---: | :---: | :---: | 
 | Master | 32048 | 32049 | 
 | Operator 1 | 32148 | 32149 | 
-| Operator 2 | 32158 | 32159 | 
-| Query | 32348 | 32349 | 
+| Operator 2 | 32158 | 32159 |
 
 ## Deployment
 
@@ -22,7 +21,7 @@ git clone https://github.com/EdgeLake/docker-compose
 cd docker-compose/
 ```
 
-**Master**:
+**Master**: The master node will also act as our query node
 1. Start Master Node 
 ```shell
 make up EDGELAKE_TYPE=master
