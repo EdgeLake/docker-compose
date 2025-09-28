@@ -2,10 +2,10 @@
 
 # Default values
 export IS_MANUAL ?= false
-export TAG ?= 1.3.2504-beta11
+export TAG ?= latest
 
 ifeq ($(IS_MANUAL), true)
-	export ANYLOG_TYPE ?= generic
+	export EDGELAKE_TYPE ?= generic
 	export NODE_NAME ?= anylog-node
 	export CLUSTER_NAME ?= new-cluster
 	export COMPANY_NAME ?= New Company
@@ -23,49 +23,49 @@ endif
 # Detect OS type
 export OS := $(shell uname -s)
 
-# Conditional port override based on ANYLOG_TYPE
+# Conditional port override based on EDGELAKE_TYPE
 ifeq ($(IS_MANUAL), true)
   ifeq ($(ANYLOG_SERVER_PORT),32548)
-    ifeq ($(ANYLOG_TYPE), master)
+    ifeq ($(EDGELAKE_TYPE), master)
       ANYLOG_SERVER_PORT := 32048
     endif
-    ifeq ($(ANYLOG_TYPE), operator)
+    ifeq ($(EDGELAKE_TYPE), operator)
       ANYLOG_SERVER_PORT := 32148
     endif
-    ifeq ($(ANYLOG_TYPE), publisher)
+    ifeq ($(EDGELAKE_TYPE), publisher)
       ANYLOG_SERVER_PORT := 32248
     endif
-    ifeq ($(ANYLOG_TYPE), query)
+    ifeq ($(EDGELAKE_TYPE), query)
       ANYLOG_SERVER_PORT := 32348
     endif
   endif
 
   ifeq ($(ANYLOG_REST_PORT),32549)
-    ifeq ($(ANYLOG_TYPE), master)
+    ifeq ($(EDGELAKE_TYPE), master)
       ANYLOG_REST_PORT := 32049
     endif
-    ifeq ($(ANYLOG_TYPE), operator)
+    ifeq ($(EDGELAKE_TYPE), operator)
       ANYLOG_REST_PORT := 32149
     endif
-    ifeq ($(ANYLOG_TYPE), publisher)
+    ifeq ($(EDGELAKE_TYPE), publisher)
       ANYLOG_REST_PORT := 32249
     endif
-    ifeq ($(ANYLOG_TYPE), query)
+    ifeq ($(EDGELAKE_TYPE), query)
       ANYLOG_REST_PORT := 32349
     endif
   endif
 
   ifeq ($(NODE_NAME), anylog-node)
-    ifeq ($(ANYLOG_TYPE), master)
+    ifeq ($(EDGELAKE_TYPE), master)
       NODE_NAME := anylog-master
     endif
-    ifeq ($(ANYLOG_TYPE), operator)
+    ifeq ($(EDGELAKE_TYPE), operator)
       NODE_NAME := anylog-operator
     endif
-    ifeq ($(ANYLOG_TYPE), query)
+    ifeq ($(EDGELAKE_TYPE), query)
       NODE_NAME := anylog-query
     endif
-    ifeq ($(ANYLOG_TYPE), publisher)
+    ifeq ($(EDGELAKE_TYPE), publisher)
       NODE_NAME := anylog-publisher
     endif
   endif
@@ -73,16 +73,16 @@ endif
 
 ifeq ($(IS_MANUAL), false)
   ifneq ($(filter test-node test-network,$(MAKECMDGOALS)),test-node test-network)
-    export NODE_NAME ?= $(shell cat docker-makefiles/$(ANYLOG_TYPE)-configs/base_configs.env | grep -m 1 "NODE_NAME=" | awk -F "=" '{print $$2}' | sed 's/ /-/g' | tr '[:upper:]' '[:lower:]')
+    export NODE_NAME ?= $(shell cat docker-makefiles/$(EDGELAKE_TYPE)-configs/base_configs.env | grep -m 1 "NODE_NAME=" | awk -F "=" '{print $$2}' | sed 's/ /-/g' | tr '[:upper:]' '[:lower:]')
 	ifeq ($(strip $(NODE_NAME)), "")
-	  export NODE_NAME := anylog-$(shell grep -m 1 "NODE_TYPE=" docker-makefiles/$(ANYLOG_TYPE)-configs/base_configs.env | awk -F "=" '{print $$2}' | sed 's/ /-/g' | tr '[:upper:]' '[:lower:]')
+	  export NODE_NAME := anylog-$(shell grep -m 1 "NODE_TYPE=" docker-makefiles/$(EDGELAKE_TYPE)-configs/base_configs.env | awk -F "=" '{print $$2}' | sed 's/ /-/g' | tr '[:upper:]' '[:lower:]')
 	endif
-    export ANYLOG_SERVER_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep -m 1 "ANYLOG_SERVER_PORT=" | awk -F "=" '{print $$2}')
-    export ANYLOG_REST_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep -m 1 "ANYLOG_REST_PORT=" | awk -F "=" '{print $$2}')
-    export ANYLOG_BROKER_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep -m 1 "ANYLOG_BROKER_PORT=" | awk -F "=" '{print $$2}' | grep -v '^$$')
-    export NIC_TYPE := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env | grep -m 1 "NIC_TYPE=" | awk -F "=" '{print $$2}')
-    export REMOTE_CLI := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env | grep -m 1 "REMOTE_CLI=" | awk -F "=" '{print $$2}')
-    export ENABLE_NEBULA := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env | grep -m 1 "ENABLE_NEBULA=" | awk -F "=" '{print $$2}')
+    export ANYLOG_SERVER_PORT := $(shell cat docker-makefiles/${EDGELAKE_TYPE}-configs/base_configs.env | grep -m 1 "ANYLOG_SERVER_PORT=" | awk -F "=" '{print $$2}')
+    export ANYLOG_REST_PORT := $(shell cat docker-makefiles/${EDGELAKE_TYPE}-configs/base_configs.env | grep -m 1 "ANYLOG_REST_PORT=" | awk -F "=" '{print $$2}')
+    export ANYLOG_BROKER_PORT := $(shell cat docker-makefiles/${EDGELAKE_TYPE}-configs/base_configs.env | grep -m 1 "ANYLOG_BROKER_PORT=" | awk -F "=" '{print $$2}' | grep -v '^$$')
+    export NIC_TYPE := $(shell cat docker-makefiles/${EDGELAKE_TYPE}-configs/advance_configs.env | grep -m 1 "NIC_TYPE=" | awk -F "=" '{print $$2}')
+    export REMOTE_CLI := $(shell cat docker-makefiles/${EDGELAKE_TYPE}-configs/advance_configs.env | grep -m 1 "REMOTE_CLI=" | awk -F "=" '{print $$2}')
+    export ENABLE_NEBULA := $(shell cat docker-makefiles/${EDGELAKE_TYPE}-configs/advance_configs.env | grep -m 1 "ENABLE_NEBULA=" | awk -F "=" '{print $$2}')
     export IMAGE := $(shell cat docker-makefiles/.env | grep -m 1 "IMAGE=" | awk -F "=" '{print $$2}')
   endif
 
@@ -102,8 +102,8 @@ export DOCKER_FILE_NAME := $(subst _,-,$(subst  ,-,${NODE_NAME}))-docker-compose
 
 
 all: help
-login: ## log into the docker hub for AnyLog - use `ANYLOG_TYPE` as the placeholder for password
-	$(CONTAINER_CMD) login docker.io -u anyloguser --password $(ANYLOG_TYPE)
+login: ## log into the docker hub for AnyLog - use `EDGELAKE_TYPE` as the placeholder for password
+	$(CONTAINER_CMD) login docker.io -u anyloguser --password $(EDGELAKE_TYPE)
 generate-docker-compose:
 	@mkdir -p docker-makefiles/docker-compose-files
 	@if [ ! -f docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME} ]; then \
@@ -118,9 +118,9 @@ generate-docker-compose:
 build: ## pull image from the docker hub repository
 	$(CONTAINER_CMD) pull docker.io/anylogco/anylog-network:$(TAG)
 dry-run: generate-docker-compose ## create docker-compose.yaml file based on the .env configuration file(s)
-	@echo "Dry Run $(ANYLOG_TYPE) - $(NODE_NAME)"
+	@echo "Dry Run $(EDGELAKE_TYPE) - $(NODE_NAME)"
 up: ## start AnyLog instance
-	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
+	@echo "Deploy AnyLog $(EDGELAKE_TYPE)"
 ifeq ($(IS_MANUAL),true)
 ifeq ($(REMOTE_CLI),true)
 	@$(CONTAINER_CMD) run -it -d --name remote-cli \
@@ -141,7 +141,7 @@ endif
 ifeq ($(DO_RUN),true)
 	@$(CONTAINER_CMD) run -it --rm --network host \
 		-e INIT_TYPE=prod \
-		-e NODE_TYPE=$(ANYLOG_TYPE) \
+		-e NODE_TYPE=$(EDGELAKE_TYPE) \
 		-e ANYLOG_SERVER_PORT=$(ANYLOG_SERVER_PORT) \
 		-e ANYLOG_REST_PORT=$(ANYLOG_REST_PORT) \
 		-e NODE_NAME=$(NODE_NAME) \
@@ -163,7 +163,7 @@ else
 		-p $(ANYLOG_REST_PORT):$(ANYLOG_REST_PORT) \
 		$(if $(ANYLOG_BROKER_PORT),-p $(ANYLOG_BROKER_PORT):$(ANYLOG_BROKER_PORT)) \
 		-e INIT_TYPE=prod \
-		-e NODE_TYPE=$(ANYLOG_TYPE) \
+		-e NODE_TYPE=$(EDGELAKE_TYPE) \
 		-e ANYLOG_SERVER_PORT=$(ANYLOG_SERVER_PORT) \
 		-e ANYLOG_REST_PORT=$(ANYLOG_REST_PORT) \
 		-e NODE_NAME=$(NODE_NAME) \
@@ -185,7 +185,7 @@ else
 endif
 
 down: ## Stop AnyLog instance
-	@echo "Stop AnyLog $(ANYLOG_TYPE)"
+	@echo "Stop AnyLog $(EDGELAKE_TYPE)"
 ifeq ($(IS_MANUAL),true)
 	ifeq ($(REMOTE_CLI),true)
 		@$(CONTAINER_CMD) stop remote-cli
@@ -197,7 +197,7 @@ else
 endif
 
 clean-vols: ## Stop AnyLog instance and remove associated volumes
-	@echo "Stop AnyLog $(ANYLOG_TYPE) & Remove Volumes"
+	@echo "Stop AnyLog $(EDGELAKE_TYPE) & Remove Volumes"
 ifeq ($(IS_MANUAL),true)
 	@$(CONTAINER_CMD) stop $(NODE_NAME)
 	@$(CONTAINER_CMD) volume rm $(NODE_NAME)-anylog $(NODE_NAME)-blockchain $(NODE_NAME)-data $(NODE_NAME)-local-scripts
@@ -211,7 +211,7 @@ else
 endif
 
 clean: ## Stop AnyLog instance and remove associated volumes & image, code will also clean the docker-compose file
-	@echo "Stop AnyLog $(ANYLOG_TYPE) & Remove Volumes and Images"
+	@echo "Stop AnyLog $(EDGELAKE_TYPE) & Remove Volumes and Images"
 ifeq ($(IS_MANUAL),true)
 	@$(CONTAINER_CMD) stop $(NODE_NAME)
 	@$(CONTAINER_CMD) volume rm $(NODE_NAME)-anylog $(NODE_NAME)-blockchain $(NODE_NAME)-data $(NODE_NAME)-local-scripts
@@ -254,7 +254,7 @@ endif
 	@curl -X GET http://$(TEST_CONN) -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"
 check-vars: ## Show all environment variable values
 	@echo "IS_MANUAL             Default: false              Value: $(IS_MANUAL)"
-	@echo "ANYLOG_TYPE           Default: generic            Value: $(ANYLOG_TYPE)"
+	@echo "EDGELAKE_TYPE           Default: generic            Value: $(EDGELAKE_TYPE)"
 	@echo "NODE_NAME             Default: anylog-node        Value: $(NODE_NAME)"
 	@echo "CLUSTER_NAME          Default: new-cluster        Value: $(CLUSTER_NAME)"
 	@echo "COMPANY_NAME          Default: New Company        Value: $(COMPANY_NAME)"
@@ -273,7 +273,7 @@ help:
 	@echo ""
 	@echo "Common variables you can override:"
 	@echo "  IS_MANUAL           Use manual deployment (true/false) - required to overwrite"
-	@echo "  ANYLOG_TYPE         Type of node to deploy (e.g., master, operator)"
+	@echo "  EDGELAKE_TYPE         Type of node to deploy (e.g., master, operator)"
 	@echo "  TAG                 Docker image tag to use"
 	@echo "  NODE_NAME           Custom name for the container"
 	@echo "  CLUSTER_NAME		 Cluster Operator node is associted with"
