@@ -78,7 +78,7 @@ high-availability, managing the sharing of data across operators (on the same cl
 ```shell
 docker run -it --network host \
   -e INIT_TYPE=prod \
-  -e ANYLOG_TYPE=[AnyLog Type - generic, master, operator, query or publisher] \
+  -e NODE_TYPE=[AnyLog Type - generic, master, operator, query or publisher] \
   -e LICENSE_KEY=[User specific license key] \
 --name edgelake-node --rm anylog.docker.scarf.sh/anylogco/edgelake:latest
 ```
@@ -125,30 +125,25 @@ said configurations. When using the manual deployment the database layer will be
 
 * Generic - An empty AnyLog instance consisting of **only** network configuration services 
 ```shell
-make up IS_MANUAL=true ANYLOG_TYPE=generic LICENSE_KEY=[User specific license key]
+make up IS_MANUAL=true EDGELAKE_TYPE=generic LICENSE_KEY=[User specific license key]
 ```
 
 * Master - An AnyLog instance that replaces a real blockchain, acting as an "Oracle" alternative for the network. 
 ```shell
-make up IS_MANUAL=true ANYLOG_TYPE=master LICENSE_KEY=[User specific license key] ANYLOG_SERVER_PORT=32048 ANYLOG_REST_PORT=32049
+make up IS_MANUAL=true EDGELAKE_TYPE=master LICENSE_KEY=[User specific license key] ANYLOG_SERVER_PORT=32048 ANYLOG_REST_PORT=32049
 ```
 
 * Operator - An AnyLog instance dedicated to storing data from devices 
 ```shell
-make up IS_MANUAL=true ANYLOG_TYPE=operator LICENSE_KEY=[User specific license key] ANYLOG_SERVER_PORT=32148 ANYLOG_REST_PORT=32149 LEDGER_CONN=104.237.138.113:32048 CLUSTER_NAME=my-cluster1
+make up IS_MANUAL=true EDGELAKE_TYPE=operator LICENSE_KEY=[User specific license key] ANYLOG_SERVER_PORT=32148 ANYLOG_REST_PORT=32149 LEDGER_CONN=104.237.138.113:32048 CLUSTER_NAME=my-cluster1
 ```
 
 * Query - An AnyLog instance dedicated for running queries. Any node can act as a query node as long as they have `system_query` logical database
 ```shell
-make up IS_MANUAL=true ANYLOG_TYPE=query LICENSE_KEY=[User specific license key] ANYLOG_SERVER_PORT=32348 ANYLOG_REST_PORT=32349 LEDGER_CONN=104.237.138.113:32048
+make up IS_MANUAL=true EDGELAKE_TYPE=query LICENSE_KEY=[User specific license key] ANYLOG_SERVER_PORT=32348 ANYLOG_REST_PORT=32349 LEDGER_CONN=104.237.138.113:32048
 ```
 
-* Publisher - An AnyLog instance that's intended for distributing data among operator nodes.  
-```shell
-make up IS_MANUAL=true ANYLOG_TYPE=publisher LICENSE_KEY=[User specific license key] ANYLOG_SERVER_PORT=32248 ANYLOG_REST_PORT=32249 LEDGER_CONN=104.237.138.113:32048
-```
-
-All AnyLog containers run the same source code / image. It is the configurations that define which services to enable. 
+All EdgeLake containers run the same source code / image. It is the configurations that define which services to enable. 
 
 
 ### Configuration-based Deployment
@@ -168,13 +163,13 @@ Key values to set in the *[*basic config](docker-makefiles/operator-configs/base
 2. **Deploy Node** - the [Makefile](Makefile) can be used with either _Podman_ or _Docker_. 
 ```shell
 cd docker-compose
-make up ANYLOG_TYPE=operator
+make up EDGELAKE_TYPE=operator
 ```
 
 3. **Check Status**  
 ```shell
 cd docker-compose
-make logs ANYLOG_TYPE=operator
+make logs EDGELAKE_TYPE=operator
 
 <<COMMENT 
 # Expected output for Operator Node 
@@ -204,7 +199,7 @@ AL nov-operator2 >
 
 4. **Attach** - to detach `ctrl-d`
 ```shell
-make attach ANYLOG_TYPE=operator
+make attach EDGELAKE_TYPE=operator
 [press Enter twice]
 ```
 
@@ -218,7 +213,7 @@ cp docker-makefiles/operator-configs docker-makefiles/operator2-configs
 
 3. Start new operator node 
 ```shell
-make up ANYLOG_TYPE=operator2
+make up EDGELAKE_TYPE=operator2
 ```
 
 ## Configuration file(s) Breakdown 
@@ -226,8 +221,6 @@ make up ANYLOG_TYPE=operator2
 * General configurations
 ```dotenv
 #--- General ---
-# AnyLog License Key
-LICENSE_KEY=""
 # Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
 NODE_TYPE=operator
 # Name of the AnyLog instance
@@ -396,7 +389,7 @@ DEBUG_MODE=false
 ```
 
 **[Advanced Configs](docker-makefiles/operator-configs/advance_configs.env)**
-* AnyLog Directory Paths
+* EdgeLake Directory Paths
 ```
 #--- Directories ---
 # AnyLog Root Path - if changed make sure to change volume path in docker-compose-template
