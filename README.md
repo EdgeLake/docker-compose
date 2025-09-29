@@ -1,6 +1,6 @@
-# Deploying AnyLog
+# Deploying EdgeLake
 
-AnyLog enables real-time visibility and management of distributed edge data, applications, and infrastructure. It 
+EdgeLake enables real-time visibility and management of distributed edge data, applications, and infrastructure. It 
 transforms edge environments into scalable data tiers optimized for IoT, allowing organizations to extract insights 
 across industries like manufacturing, utilities, oil & gas, smart cities, retail, robotics, and more.
 
@@ -36,19 +36,15 @@ sudo usermod -aG docker ${USER}
 newgrp docker
 ```
 
-* Clone _docker-compose_ from AnyLog repository
+* Clone _docker-compose_ from EdgeLake repository
 ```shell
-git clone https://github.com/AnyLog-co/docker-compose
+git clone https://github.com/EdgeLake/docker-compose
 cd docker-compose
 ```
 
-* AnyLog is a private repository, requiring docker login. Please [reach out](https://www.anylog.network/download) in order to get credentials for both  our Docker login and AnyLog license key.
-```shell 
-docker login -u anyloguser -p [Docker Login Passkey]
-```
 
 ## Deployment Configurations
-AnyLog deployment contains predefined configurations for each node type, enabling users to deploy a network with a 
+EdgeLake deployment contains predefined configurations for each node type, enabling users to deploy a network with a 
 simple `docker run` command. This approach allows for quick deployment with minimal configuration but is limited to one 
 node type per machine. To overcome this limitation, additional environment configurations can be provided.
 
@@ -78,13 +74,13 @@ high-availability, managing the sharing of data across operators (on the same cl
 | Generic   | 32548       | 32549     |
 
 
-**Generic Docker Run Command**: The following command will deploy an AnyLog container with the default configurations   
+**Generic Docker Run Command**: The following command will deploy an EdgeLake container with the default configurations   
 ```shell
 docker run -it --network host \
   -e INIT_TYPE=prod \
   -e ANYLOG_TYPE=[AnyLog Type - generic, master, operator, query or publisher] \
   -e LICENSE_KEY=[User specific license key] \
---name anylog-node --rm anylogco/anylog-network:latest
+--name edgelake-node --rm anylog.docker.scarf.sh/anylogco/edgelake:latest
 ```
 
 ## Deployment via Makefile

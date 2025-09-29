@@ -3,7 +3,7 @@
 export $(grep -v '^#' docker-makefile/generic-configs/advance_configs.env | xargs)
 export $(grep -v '^#' docker-makefile/generic-configs/base_configs.env | xargs)
 
-docker run -it --name anylog-${NODE_TYPE} \
+docker run -it --name edgelake-${NODE_TYPE} \
    --network host \
    --cap-add=NET_ADMIN \
    --device=/dev/net/tun:/dev/net/tun \
